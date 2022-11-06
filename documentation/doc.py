@@ -6,5 +6,9 @@
     ==================================
 """
 tags_metadatas = [
+    {
+        "name": "Facultad",
+        "description": "Acciones necesarias para los datos de las facultades"
+    },
     
 ]

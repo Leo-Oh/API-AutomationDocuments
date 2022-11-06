@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 
+from router.facultad import facultad
 
 from documentation.doc import tags_metadatas
 
@@ -22,6 +23,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(facultad,prefix='/api',tags=["Facultad"])
+
 
 load_dotenv()
 
