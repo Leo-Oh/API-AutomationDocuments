@@ -2,11 +2,10 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 
-class Facultad(BaseModel):
+class Region(BaseModel):
     id: Optional[int]
     nombre: str
-    regiones_id: int
 
-class FacultadUpdate(BaseModel):
+class RegionUpdate(BaseModel):
     nombre: str
-    regiones_id: int
+    

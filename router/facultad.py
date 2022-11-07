@@ -2,20 +2,19 @@ from distutils.log import error
 from xmlrpc.client import SERVER_ERROR
 from fastapi import APIRouter, Response, Header
 from fastapi.responses import JSONResponse 
-from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
-from werkzeug.security import generate_password_hash, check_password_hash
+from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
 
-from schema.facultad import Facultad
+from schema.Facultad import Facultad, FacultadUpdate
 from db.db import engine
-from model.facultad import facultades
+from model.Facultad import facultades
 import logging
 
 
-facultad = APIRouter()
+facultadRouter = APIRouter()
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
-@facultad.get("/facultades", response_model=List[Facultad])
+@facultadRouter.get("/facultades", response_model=List[Facultad])
 def get_facultad():
     try:
         with engine.connect() as conn:
@@ -32,51 +31,44 @@ def get_facultad():
         return Response(status_code= SERVER_ERROR )
    
 
-
-@facultad.get("/facultad/{facultad_id}", response_model=Facultad)
-def get_facultad(facultad_id: int):
+@facultadRouter.get("/facultad/{region_id}/{facultad_id}", response_model=Facultad)
+def get_facultad(region_id: int, facultad_id: int):
     try:
         with engine.connect() as conn:
-            result = conn.execute(facultades.select().where(facultades.c.id == facultad_id)).first()
-        
+            result = conn.execute(facultades.select().where(facultades.c.id == facultad_id and region_id == region_id)).first()
         if(result):
-            logging.info(f"Se obtuvo información de la facultad: {facultad_id}")
+            logging.info(f"Se obtuvo información de la facultad con el ID = {region_id} y la region con el ID= {facultad_id}")
             return result
         else:
             return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
-        logging.error(f"Error al obtener información de la facultad con id= {facultad_id}: {exception_error}") 
+        logging.error(f"Error al obtener información de la facultad con el ID = {region_id} y la region con el ID= {facultad_id}: {exception_error}") 
         return Response(status_code= SERVER_ERROR )
 
 
-
-@facultad.post("/facultad", status_code=HTTP_201_CREATED)
+@facultadRouter.post("/facultad", status_code=HTTP_201_CREATED)
 def create_facultad(data_facultad: Facultad):
     try:
         with engine.connect() as conn:    
             new_facultad = data_facultad.dict()
             conn.execute(facultades.insert().values(new_facultad))
-        
-        logging.info(f"Facultad {new_facultad.name} creada correctamente")
+        logging.info(f"Facultad {data_facultad.nombre} creada correctamente")
         return Response(status_code=HTTP_201_CREATED)
     except Exception as exception_error:
-        logging.error(f"Error al crear la facultad {facultad.name}: {exception_error}")
+        logging.error(f"Error al crear la facultad {data_facultad.nombre}: {exception_error}")
         return Response(status_code= SERVER_ERROR )
-        
-    
 
   
-@facultad.put("/facultad/{facultad_id}", response_model=Facultad)
-def update_facultad(data_update: Facultad, facultad_id: str):
+@facultadRouter.put("/facultad/{region_id}/{facultad_id}", response_model=Facultad)
+def update_facultad(data_update: FacultadUpdate, region_id: int, facultad_id: int):
     try:
         with engine.connect() as conn:
             conn.execute(facultades.update().values(
-                id = data_update.id,
                 nombre = data_update.nombre,
-                region = data_update.region,
-            ).where(facultades.c.id == facultad_id))
+                region_id = data_update.regiones_id
+            ).where(facultades.c.id == facultad_id and facultades.c.regiones_id == region_id))
 
-            result = conn.execute(facultades.select().where(facultades.c.id == facultad_id)).first()
+            result = conn.execute(facultades.select().where(facultades.c.id == facultad_id and region_id == region_id)).first()
 
         logging.warning(f"Facultad {data_update.nombre} actualizada correctamente")
         return result
@@ -85,14 +77,14 @@ def update_facultad(data_update: Facultad, facultad_id: str):
         return Response(status_code= SERVER_ERROR )
         
 
-@facultad.delete("/facultad/{facultad_id}", status_code=HTTP_204_NO_CONTENT)
-def delete_facultad(facultad_id: str):
+@facultadRouter.delete("/facultad/{region_id}/{facultad_id}", status_code=HTTP_204_NO_CONTENT)
+def delete_facultad(region_id:int, facultad_id: str):
     try:
         with engine.connect() as conn:
-            conn.execute(facultades.delete().where(facultades.c.id == facultad_id))
+            conn.execute(facultades.delete().where(facultades.c.id == facultad_id and facultades.c.regiones_id == region_id))
         
-        logging.critical(f"Error al eliminar la facultad {facultad_id}: {exception_error}")
+        logging.critical(f"Facultad con el ID {facultad_id} de la region {region_id} eliminada correctamente")
         return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
-        logging.error(f"Error al eliminar la facultad {facultad_id}: {exception_error}")
+        logging.error(f"Error al eliminar la facultad  con el ID {facultad_id} de la region {region_id} : {exception_error}")
         return Response(status_code= SERVER_ERROR )
