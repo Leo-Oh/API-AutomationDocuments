@@ -7,6 +7,7 @@ from db.db import engine, meta_data
 carreras = Table('carreas', meta_data,
     Column('id', Integer, primary_key=True),
     Column('nombre', String(150), nullable=False),
+    
     Column('fecha_de_creacion',DateTime(), default = datetime.now()),
 )
 

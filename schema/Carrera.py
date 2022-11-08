@@ -8,4 +8,4 @@ class Carrera(BaseModel):
 
 class CarreraUpdate(BaseModel):
     nombre: str
-
+   
