@@ -1,1 +1,0 @@
-# SCHEMA estructure are here
