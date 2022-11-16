@@ -4,7 +4,7 @@ from typing import Optional
 
 class Estudiante(BaseModel):
     id: Optional[int]
-    id_carrera: int
+    id_carreras: int
     nombre: str
     apellido_paterno: str
     apellido_materno: str
@@ -15,7 +15,7 @@ class Estudiante(BaseModel):
     telefono: Optional[str]
 
 class EstudianteUpdate(BaseModel):
-    id_carrera: int
+    id_carreras: int
     nombre: str
     apellido_paterno: str
     apellido_materno: str

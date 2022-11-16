@@ -7,7 +7,7 @@ from pydantic import BaseModel, Datetime, EmailStr
 
 class SolicitudTramite_estudiante(BaseModel):
     id: Optional[int]
-    id_secretaria: int
+    id_secretarias: int
     id_tramite: int
     id_carrera: int
     id_estudiante: int

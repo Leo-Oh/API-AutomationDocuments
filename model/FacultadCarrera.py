@@ -7,6 +7,8 @@ from db.db import engine, meta_data
 facultades_carreras = Table('facultades_carreras', meta_data,
     Column('id_facultades', ForeignKey('facultades.id')),
     Column('id_carreras', ForeignKey('carreras.id')),
+    
+    Column('fecha_de_creacion',DateTime(), default = datetime.now()),
 )
 
 meta_data.bind = engine
