@@ -1,5 +1,5 @@
 __pycache__
 venv
 .env
-modules
+modules/shape_predictor_68_face_landmarks.dat
 .vscode
