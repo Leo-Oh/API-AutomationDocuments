@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Se lee el archivo de configuración 
 db_user = os.getenv('LOCAL_DB_USER')
 db_password = os.getenv('LOCAL_DB_PASSWORD')
 db_host = os.getenv('LOCAL_DB_HOST')

@@ -2,31 +2,30 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 
-class Estudiante(BaseModel):
+class Administrador(BaseModel):
     id: Optional[int]
-    id_carreras: int
-    nombre: str
-    apellido_paterno: str
-    apellido_materno: str
-    matricula: str
+    id_facultades: int
+    usuario: str
     correo: EmailStr
     contrasena: str
-    semestre: str
-    telefono: Optional[str]
-    foto_perfil: Optional[str]
-
-class EstudianteUpdate(BaseModel):
-    id_carreras: int
     nombre: str
     apellido_paterno: str
     apellido_materno: str
+    foto_perfil: Optional[str]
+    
+class AdministradorUpdate(BaseModel):
+    id_facultades: int
+    usuario: str
+    correo: EmailStr
     contrasena: str
-    semestre: str
-    telefono: Optional[str]
+    nombre: str
+    apellido_paterno: str
+    apellido_materno: str
     foto_perfil: Optional[str]
     
     
-class EstudianteSettings(BaseModel):
+class AdministradorSettings(BaseModel):
+    usuario: str
+    correo: EmailStr
     contrasena: str
-    telefono: str
     foto_perfil: Optional[str]

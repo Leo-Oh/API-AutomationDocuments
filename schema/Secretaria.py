@@ -14,6 +14,7 @@ class Secretaria(BaseModel):
     correo: str
     contrasena: str
     direccion: Optional[str]
+    foto_perfil: Optional[str]
 
 class SecretariaUpdate(BaseModel):
     id_facultades: int
@@ -22,5 +23,15 @@ class SecretariaUpdate(BaseModel):
     apellido_materno: str
     turno: str
     telefono: Optional[str]
+    matricula: str
+    correo: str
     contrasena: str
     direccion: Optional[str]
+    foto_perfil: Optional[str]
+    
+
+class SecretariaSettingsUpdate(BaseModel):
+    telefono: Optional[str]
+    contrasena: str
+    direccion: Optional[str]
+    foto_perfil: Optional[str]

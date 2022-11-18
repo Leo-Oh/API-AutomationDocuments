@@ -3,10 +3,17 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 
-from router.Region import regionRouter
-from router.Facultad import facultadRouter
-from router.Carrera import carreraRouter
-from router.FacultadCarrera import facultad_carreraRouter
+from router.Region import regiones_Router
+from router.Facultad import facultades_Router
+from router.Carrera import carreras_Router
+from router.FacultadCarrera import facultadesCarreras_Router
+from router.Secretaria import secretarias_Router
+from router.Tramites import tramites_Router
+from router.SecretariaTramite import secretariasTramites_Router
+from router.SecretariaCarrera import secretariasCarreras_Router
+from router.Estudiante import estudiantes_Router
+from router.SolicitudTramite import solicitud_de_tramites_Router
+
 
 from documentation.doc import tags_metadatas
 
@@ -28,10 +35,17 @@ app.add_middleware(
 )
 
 
-app.include_router(regionRouter,prefix='/api',tags=["Region"])
-app.include_router(facultadRouter,prefix='/api',tags=["Facultad"])
-app.include_router(carreraRouter,prefix='/api',tags=["Carrera"])
-app.include_router(facultad_carreraRouter,prefix='/api',tags=["Facultad-Carrera"])
+app.include_router(regiones_Router,prefix='/api',tags=["Regiones"])
+app.include_router(facultades_Router,prefix='/api',tags=["Facultades"])
+app.include_router(carreras_Router,prefix='/api',tags=["Carreras"])
+app.include_router(facultadesCarreras_Router,prefix='/api',tags=["Facultades-Carreras"])
+app.include_router(secretarias_Router,prefix='/api',tags=["Secretarias"])
+app.include_router(tramites_Router,prefix='/api',tags=["Tramites"])
+app.include_router(secretariasTramites_Router,prefix='/api',tags=["Secretarias-Tramites"])
+app.include_router(secretariasCarreras_Router,prefix='/api',tags=["Secretarias-Carreras"])
+app.include_router(estudiantes_Router,prefix='/api',tags=["Estudiantes"])
+app.include_router(solicitud_de_tramites_Router,prefix='/api',tags=["Solicitud de tramites"])
+
 
 load_dotenv()
 

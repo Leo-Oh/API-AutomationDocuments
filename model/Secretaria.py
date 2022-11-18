@@ -17,7 +17,8 @@ secretarias = Table('secretarias', meta_data,
     Column('correo', String(60), nullable=False),
     Column('contrasena', Text, nullable=False),
     Column('direccion', Text),
-
+    Column('foto_perfil', Text),
+    
     Column('fecha_de_creacion',DateTime(), default = datetime.now()),
         
 )

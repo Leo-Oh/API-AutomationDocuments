@@ -13,7 +13,8 @@ administradores = Table('administradores', meta_data,
     Column('nombre', String(60), nullable=False),
     Column('apellido_paterno', String(40), nullable=False),
     Column('apellido_materno', String(40), nullable=False),
-    
+    Column('foto_perfil', Text),
+     
     Column('fecha_de_creacion',DateTime(), default = datetime.now()),
 )
 

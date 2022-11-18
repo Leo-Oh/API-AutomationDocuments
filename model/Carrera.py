@@ -4,7 +4,7 @@ from datetime import datetime
 from db.db import engine, meta_data
 
 
-carreras = Table('carreas', meta_data,
+carreras = Table('carreras', meta_data,
     Column('id', Integer, primary_key=True),
     Column('nombre', String(150), nullable=False),
     

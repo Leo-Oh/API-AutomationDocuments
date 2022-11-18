@@ -1,7 +1,6 @@
 
-from pydantic import BaseModel, EmailStr, Datetime
+from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
 class Tramite(BaseModel):
     id: Optional[int]

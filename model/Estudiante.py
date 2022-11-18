@@ -15,6 +15,7 @@ estudiantes = Table('estudiantes', meta_data,
     Column('contrasena', Text, nullable=False),
     Column('semestre', Integer, nullable=False),
     Column('telefono', String(20)),
+    Column('foto_perfil', Text),
     
     Column('fecha_de_creacion',DateTime(), default = datetime.now()),
 )
