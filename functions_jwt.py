@@ -1,5 +1,4 @@
-from jwt import encode, decode
-from jwt import exceptions
+from jwt import encode, decode, exceptions
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv

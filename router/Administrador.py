@@ -78,25 +78,61 @@ def get_administrador_by_id_carrera_and_by_id_administrador(id_carrera: int, id_
 def create_administrador(data_administrador: Administrador):
     try:
         with engine.connect() as conn:    
+        
+            result = conn.execute(administradores.select().where(administradores.c.email == data_administrador.email or administradores.c.matricula == data_administrador.matricula)).first()
+            if result != None:
+                return Response(status_code=HTTP_401_UNAUTHORIZED)
+            
             new_administrador = data_administrador.dict()
+            new_administrador["contrasena"] = generate_password_hash(data_administrador.contrasena, "pbkdf2:sha256:30", 30)
             conn.execute(administradores.insert().values(new_administrador))
+            
         logging.info(f"Administrador {data_administrador.nombre} creado correctamente")
         return Response(status_code=HTTP_201_CREATED)
     except Exception as exception_error:
         logging.error(f"Error al crear el administrador {data_administrador.nombre} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
+@administradores_Router.post("/administrador/ingresar")
+def administradores_ingresar_al_sistema(administrador : AdministradorAuth):
+  with engine.connect() as conn:
+    if(administrador.correo != None):
+        result = conn.execute(administradores.select().where(administradores.c.correo == administrador.correo )).first()
+    if(administrador.matricula != None):
+        result = conn.execute(administradores.select().where(administradores.c.matricula == administrador.matricula )).first()
+
+    if result != None:
+        check_passw = check_password_hash(result[5], administrador.contrasena)
+        if check_passw:
+            return {
+            "status": 200,
+            "message": "Access success",
+            "token" : write_token(administrador.dict()),
+            "user" : result
+            }
+        else:
+            return Response(status_code=HTTP_401_UNAUTHORIZED)
+    else:
+        return JSONResponse(content={"message": "Usuario no encontrado"}, status_code=404)
+
+@administradores_Router.post("/administrador/verify/token")
+def verify_token(token_administrador:str=Header(default=None)):
+  token = token_administrador.split(" ")[0]
+  return validate_token(token, output=True)
+
   
 @administradores_Router.put("/administrador/{id_carrera}/{id_administrador}", response_model=Administrador)
 def update_administrador(data_update: AdministradorUpdate, id_carrera: int, id_administrador:int):
     try:
         with engine.connect() as conn:
+            encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
+            
             conn.execute(administradores.update().values(                
                 id_carreras = data_update.id_carreras,
                 nombre = data_update.nombre,
                 apellido_paterno = data_update.apellido_paterno,
                 apellido_materno = data_update.apellido_materno,
-                contrasena = data_update.contrasena,
+                contrasena = encryp_passw,
                 semestre = data_update.semestre,
                 telefono = data_update.telefono,
                 foto_perfil = data_update.foto_perfil,
@@ -115,9 +151,10 @@ def update_administrador(data_update: AdministradorUpdate, id_carrera: int, id_a
 def update_settings_administrador(data_update: AdministradorSettings, id_carrera: int, id_administrador:int):
     try:
         with engine.connect() as conn:
+            encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
             conn.execute(administradores.update().values(
                 telefono = data_update.telefono,
-                contrasena = data_update.contrasena,
+                contrasena = encryp_passw,
                 foto_perfil = data_update.foto_perfil,
             ).where(administradores.c.id == id_administrador and administradores.c.id_carreras ==id_carrera ))
 

@@ -29,3 +29,9 @@ class AdministradorSettings(BaseModel):
     correo: EmailStr
     contrasena: str
     foto_perfil: Optional[str]
+    
+
+class AdministradorAuth(BaseModel):
+    usuario: Optional[str]
+    correo : Optional[EmailStr]
+    contrasena: str

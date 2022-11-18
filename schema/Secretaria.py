@@ -35,3 +35,9 @@ class SecretariaSettingsUpdate(BaseModel):
     contrasena: str
     direccion: Optional[str]
     foto_perfil: Optional[str]
+    
+
+class SecretariaAuth(BaseModel):
+    matricula: Optional[str]
+    correo : Optional[EmailStr]
+    contrasena: str

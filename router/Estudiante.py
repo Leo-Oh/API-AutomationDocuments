@@ -5,10 +5,17 @@ from fastapi.responses import JSONResponse
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
 
-from schema.Estudiante import Estudiante, EstudianteSettings, EstudianteUpdate
+from schema.Estudiante import Estudiante, EstudianteAuth, EstudianteSettings, EstudianteUpdate
 from db.db import engine
 from model.Estudiante import estudiantes
 import logging
+
+
+from werkzeug.security import generate_password_hash, check_password_hash
+from typing import List
+from functions_jwt import write_token, validate_token
+
+
 
 
 estudiantes_Router = APIRouter()
@@ -77,8 +84,15 @@ def get_estudiante_by_id_carrera_and_by_id_estudiante(id_carrera: int, id_estudi
 @estudiantes_Router.post("/estudiante", status_code=HTTP_201_CREATED)
 def create_estudiante(data_estudiante: Estudiante):
     try:
-        with engine.connect() as conn:    
+        with engine.connect() as conn:
+            result = conn.execute(estudiantes.select().where(estudiantes.c.correo == data_estudiante.correo or estudiantes.c.matricula == estudiantes.matricula)).first()    
+            
+            if result != None:
+                return Response(status_code=HTTP_401_UNAUTHORIZED)
+   
             new_estudiante = data_estudiante.dict()
+            new_estudiante["contrasena"] = generate_password_hash(data_estudiante.contrasena, "pbkdf2:sha256:30", 30)
+            
             conn.execute(estudiantes.insert().values(new_estudiante))
         logging.info(f"Estudiante {data_estudiante.nombre} creado correctamente")
         return Response(status_code=HTTP_201_CREATED)
@@ -86,17 +100,48 @@ def create_estudiante(data_estudiante: Estudiante):
         logging.error(f"Error al crear el estudiante {data_estudiante.nombre} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
-  
+
+@estudiantes_Router.post("/administrador/ingresar")
+def estudiantes_ingresar_al_sistema(estudiantes : EstudianteAuth):
+  with engine.connect() as conn:
+    if(estudiantes.correo != None):
+      result = conn.execute(estudiantes.select().where(estudiantes.c.correo == estudiantes.correo )).first()
+    if(estudiantes.registration_tag != None):
+      result = conn.execute(estudiantes.select().where(estudiantes.c.matricula == estudiantes.matricula )).first()
+
+    if result != None:
+      check_passw = check_password_hash(result[8], estudiantes.contrasena)
+      if check_passw:
+        return {
+          "status": 200,
+          "message": "Access success",
+          "token" : write_token(estudiantes.dict()),
+          "user" : result
+        }
+      else:
+        return Response(status_code=HTTP_401_UNAUTHORIZED)
+    else:
+      return JSONResponse(content={"message": "User not found"}, status_code=404)
+
+@estudiantes_Router.post("/administradores/verify/token")
+def estudiantes_verificar_token(token_estudiante:str=Header(default=None)):
+  #token = user_token.split(' ')[1]
+  token=token_estudiante.split(" ")[0]
+  return validate_token(token_estudiante, output=True)
+
+
 @estudiantes_Router.put("/estudiante/{id_carrera}/{id_estudiante}", response_model=Estudiante)
 def update_estudiante(data_update: EstudianteUpdate, id_carrera: int, id_estudiante:int):
     try:
         with engine.connect() as conn:
+            encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
+
             conn.execute(estudiantes.update().values(                
                 id_carreras = data_update.id_carreras,
                 nombre = data_update.nombre,
                 apellido_paterno = data_update.apellido_paterno,
                 apellido_materno = data_update.apellido_materno,
-                contrasena = data_update.contrasena,
+                contrasena = encryp_passw,
                 semestre = data_update.semestre,
                 telefono = data_update.telefono,
                 foto_perfil = data_update.foto_perfil,
@@ -115,9 +160,11 @@ def update_estudiante(data_update: EstudianteUpdate, id_carrera: int, id_estudia
 def update_settings_estudiante(data_update: EstudianteSettings, id_carrera: int, id_estudiante:int):
     try:
         with engine.connect() as conn:
+            encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
+
             conn.execute(estudiantes.update().values(
                 telefono = data_update.telefono,
-                contrasena = data_update.contrasena,
+                contrasena = encryp_passw,
                 foto_perfil = data_update.foto_perfil,
             ).where(estudiantes.c.id == id_estudiante and estudiantes.c.id_carreras ==id_carrera ))
 

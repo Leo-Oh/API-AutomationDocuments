@@ -75,8 +75,15 @@ def get_secretaria_by_id_facultad_and_by_id_secretaria(id_facultad: int, id_secr
 @secretarias_Router.post("/secretaria", status_code=HTTP_201_CREATED)
 def create_secretaria(data_secretaria: Secretaria):
     try:
-        with engine.connect() as conn:    
+        with engine.connect() as conn:
+            result = conn.execute(secretarias.select().where(secretarias.c.correo == data_secretaria.correo or secretarias.c.matricula == data_secretaria.matricula)).first()
+            
+            if result != None:
+                return Response(status_code=HTTP_401_UNAUTHORIZED)
+            
             new_secretaria = data_secretaria.dict()
+            new_secretaria["contrasena"] = generate_password_hash(data_secretaria.contrasena, "pbkdf2:sha256:30", 30)
+            
             conn.execute(secretarias.insert().values(new_secretaria))
         logging.info(f"Secretaria {data_secretaria.nombre} creada correctamente")
         return Response(status_code=HTTP_201_CREATED)
@@ -84,11 +91,14 @@ def create_secretaria(data_secretaria: Secretaria):
         logging.error(f"Error al crear la facultad {data_secretaria.nombre} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
-  
+
+
 @secretarias_Router.put("/secretaria/{id_facultad}/{id_secretaria}", response_model=Secretaria)
 def update_secretaria(data_update: SecretariaUpdate, id_facultad:int, id_secretaria: int):
     try:
         with engine.connect() as conn:
+            encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
+
             conn.execute(secretarias.update().values(
                 id_facultades = data_update.nombre,    
                 nombre = data_update.nombre,
@@ -98,7 +108,7 @@ def update_secretaria(data_update: SecretariaUpdate, id_facultad:int, id_secreta
                 telefono = data_update.telefono,
                 matricula = data_update.matricula,
                 correo = data_update.correo,
-                contrasena = data_update.contrasena,
+                contrasena = encryp_passw,
                 direccion = data_update.direccion,
                 foto_perfil = data_update.foto_perfil,
             ).where(secretarias.c.id == id_secretaria and secretarias.c.id_facultades == id_facultad))
@@ -116,9 +126,11 @@ def update_secretaria(data_update: SecretariaUpdate, id_facultad:int, id_secreta
 def update_settings_secretaria(data_update: SecretariaSettingsUpdate, id_facultad: int, id_secretaria:int):
     try:
         with engine.connect() as conn:
+            encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
+            
             conn.execute(secretarias.update().values(
                 telefono = data_update.telefono,
-                contrasena = data_update.contrasena,
+                contrasena = encryp_passw,
                 direccion = data_update.direccion,
                 foto_perfil = data_update.foto_perfil,
             ).where(secretarias.c.id == id_secretaria and secretarias.c.id_facultades == id_facultad ))
