@@ -17,6 +17,8 @@ from router.SolicitudTramite import solicitud_de_tramites_Router
 from router.ArchivoVerificacionTramite import arhivosVerificacionTramites_Router
 from router.ArchivoTramite import arhivosTramites_Router
 
+from router.Administrador import administradores_Router
+
 from documentation.doc import tags_metadatas
 
 app = FastAPI(
@@ -47,6 +49,8 @@ app.include_router(secretariasTramites_Router,prefix='/api',tags=["Secretarias-T
 app.include_router(secretariasCarreras_Router,prefix='/api',tags=["Secretarias-Carreras"])
 app.include_router(estudiantes_Router,prefix='/api',tags=["Estudiantes"])
 app.include_router(solicitud_de_tramites_Router,prefix='/api',tags=["Solicitud de tramites"])
+
+app.include_router(administradores_Router,prefix='/api',tags=["Administrador"])
 
 app.include_router(arhivosVerificacionTramites_Router,prefix='/api/files/verificacion-tramites',tags=["Archvivos para la verificación de tramites"])
 app.include_router(arhivosTramites_Router,prefix='/api/files/tramites',tags=["Archvivos que mandan las secretarias a los estudiantes"])

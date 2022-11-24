@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
 
-from schema.Administrador import Administrador, AdministradorSettings, AdministradorUpdate
+from schema.Administrador import Administrador, AdministradorAuth, AdministradorSettings, AdministradorUpdate
 from db.db import engine
 from model.Administrador import administradores
 import logging
