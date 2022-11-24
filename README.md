@@ -51,3 +51,21 @@ Configuración:
 5. Ejecutar la API
 
     uvicorn main:app --reload 
+ 
+
+Crear Docker con MySQL
+
+Creamos un volumen
+
+    sudo docker volume create mysql-db
+
+Verificamos que se haya creado el volumen
+
+    sudo docker volume ls
+
+Correr imagen de mysql asignando la contraseña
+
+    sudo docker run -d -p 3306:3306 --name mysql-db-container  -e MYSQL_ROOT_PASSWORD=password --mount src=mysql-db,dst=/var/lib/mysql mysql
+
+    sudo docker exec -it mysql-db  mysql -p
+
