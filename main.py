@@ -21,6 +21,8 @@ from router.Administrador import administradores_Router
 
 from documentation.doc import tags_metadatas
 
+
+
 app = FastAPI(
     title="REST API to Automation Documents by UV",
     description="By ISW UV",
@@ -56,5 +58,8 @@ app.include_router(arhivosVerificacionTramites_Router,prefix='/api/files/verific
 app.include_router(arhivosTramites_Router,prefix='/api/files/tramites',tags=["Archvivos que mandan las secretarias a los estudiantes"])
 load_dotenv()
 
-#if __name__ == "__main__":
-#    uvicorn.run(app, port=9090, host="0.0.0.0")
+
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=1001, host="0.0.0.0")

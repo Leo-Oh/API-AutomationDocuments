@@ -50,4 +50,13 @@ Configuración:
 
 5. Ejecutar la API
 
-    uvicorn main:app --reload 
+    uvicorn main:app --reload
+
+
+Crear imagen de FastAPI 
+
+sudo docker build -t automation-documents:0.1 .
+
+Correr imagen creada de FastAPI
+
+sudo docker run --publish 1001:1001 --detach --name api-automation-documents automation-documents:0.1 
