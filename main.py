@@ -21,7 +21,7 @@ from router.Administrador import administradores_Router
 
 from documentation.doc import tags_metadatas
 
-
+from os import makedirs
 
 app = FastAPI(
     title="REST API to Automation Documents by UV",
@@ -40,6 +40,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+makedirs('log', exist_ok=True)
 
 app.include_router(regiones_Router,prefix='/api',tags=["Regiones"])
 app.include_router(facultades_Router,prefix='/api',tags=["Facultades"])
