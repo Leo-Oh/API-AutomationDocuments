@@ -1,62 +1,123 @@
-# TRAMITES branch
+# Automation Documents
 
-Versión de python donde se desarrolló 
+## Entorno de desarrollo
 
-Python 3.8.10
+- Windows 11 
+- Python: 3.8.10  
 
-Systema Operativo Windows 11
 
-Configuración:
+## 🛠 Configuración
 
-1. Crear archivo de configuración llamado ".env" con las siguientes credenciales:
+Para correr este proyecto, necesitas crear un archivo .env y agregar las siguientes variables
 
-    SECRET_KEY = ""
+- `SECRET_KEY`
+- `LOCAL_DB_USER`
+- `LOCAL_DB_PASSWORD`
+- `LOCAL_DB_HOST`
+- `LOCAL_DB_PORT`
+- `LOCAL_DB_NAME` 
 
-    LOCAL_DB_USER = ""
-    LOCAL_DB_PASSWORD = ""
-    LOCAL_DB_HOST = ""
-    LOCAL_DB_PORT = ""
-    LOCAL_DB_NAME = ""
 
-2. Crear un entorno virtual para la instalación de las librerias
+# Instalación local  
 
-    python3 -m venv venv
+## 1. Crear un entorno virtual para la instalación de las librerias
 
-    -- o --
+~~~bash  
+   python3 -m venv venv
+~~~
+o bien  
 
-    python -m venv venv
+~~~bash  
+   python3 -m venv venv
+~~~
 
-3. Ingresar al enntorno virtual:
+    
+## 2. Ingresar al enntorno virtual:
 
-    Linux:
+#### Linux:
 
+~~~bash 
     source venv/bin/activate
+~~~
 
-    Windows:
+#### Windows:
 
+~~~bash  
     .\venv\Scripts\activate.bat
+~~~
+ o bien 
 
-    -- o --
-
+~~~bash  
     .\venv\Scripts\activate  
+~~~
 
-4. Instalar las librerias necesarias que se encuentran en el archivo "requirements.txt"
+## 3. Instalar las librerias necesarias que se encuentran en el archivo "requirements.txt"
 
-    pip install -r requirements.txt
+~~~bash  
+     pip install -r requirements.txt
+~~~
 
-    -- o -- 
+o bien 
 
-    pip install -r requirements.txt
+~~~bash  
+    pip3 install -r requirements.txt
+~~~
 
-5. Ejecutar la API
+   
+## 4. Ejecutar la API
 
+~~~bash  
     uvicorn main:app --reload
+~~~
 
 
-Crear imagen de FastAPI 
+# Crear imagen Docker de con Automation Documents
 
-sudo docker build -t automation-documents:0.1 .
 
-Correr imagen creada de FastAPI
+## Construir la imagen apartir del archivo `Dockerfile`
+~~~bash  
+   sudo docker build -t automation-documents:0.1 .
+~~~
 
-sudo docker run --publish 1001:1001 --detach --name api-automation-documents automation-documents:0.1 
+## Verificar que se creó correctamente
+
+~~~bash  
+   sudo docker images
+~~~
+
+## Correr imagen creada 
+
+~~~bash
+    sudo docker run --publish 1001:1001 --detach --name api-automation-documents automation-documents:0.1 
+~~~
+
+
+# En caso de no contar con MySQL instalado
+
+## Creamos un volumen para la persistencia de datos
+
+~~~bash
+    sudo docker volume create mysql-db
+~~~
+
+## Verificamos que se haya creado el volumen
+
+~~~bash
+    sudo docker volume ls
+~~~
+
+## Correr imagen de mysql asignando la contraseña
+
+~~~bash
+    sudo docker run -d -p 3306:3306 --name mysql-db-container  -e MYSQL_ROOT_PASSWORD=password --mount src=mysql-db,dst=/var/lib/mysql mysql
+~~~
+
+## Ingresar al gestor de base de datos para crear la base de datos
+
+~~~bash
+    sudo docker exec -it mysql-db  mysql -p
+~~~
+
+
+
+
