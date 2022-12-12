@@ -9,9 +9,11 @@ from schema.Administrador import Administrador, AdministradorAuth, Administrador
 from db.db import engine
 from model.Administrador import administradores
 import logging
+import os
 
 
 administradores_Router = APIRouter()
+os.makedirs('log/administradores', exist_ok=True)
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
 @administradores_Router.get("/administradores", response_model=List[Administrador])

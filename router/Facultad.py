@@ -9,10 +9,12 @@ from schema.Facultad import Facultad, FacultadUpdate
 from db.db import engine
 from model.Facultad import facultades
 import logging
-
+import os
 
 facultades_Router = APIRouter()
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+
+os.makedirs('log/facultades', exist_ok=True)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/facultades/registro.log", filemode = 'w',)
 
 @facultades_Router.get("/facultades", response_model=List[Facultad])
 def get_facultades():

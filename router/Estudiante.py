@@ -14,12 +14,13 @@ import logging
 from werkzeug.security import generate_password_hash, check_password_hash
 from typing import List
 from functions_jwt import write_token, validate_token
-
+import os
 
 
 
 estudiantes_Router = APIRouter()
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+os.makedirs('log/estudiantes', exist_ok=True)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/estudiantes/registro.log", filemode = 'w',)
 
 @estudiantes_Router.get("/estudiantes", response_model=List[Estudiante])
 def get_estudiantes():

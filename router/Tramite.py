@@ -9,10 +9,11 @@ from schema.Tramites import Tramite, TramiteUpdate
 from db.db import engine
 from model.Tramites import tramites
 import logging
-
+import os
 
 tramites_Router = APIRouter()
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+os.makedirs('log/tramites', exist_ok=True)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/tramites/registro.log", filemode = 'w',)
 
 @tramites_Router.get("/tramites", response_model=List[Tramite])
 def get_tramites():

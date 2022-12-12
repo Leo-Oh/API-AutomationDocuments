@@ -9,10 +9,12 @@ from schema.SolicitudTramite import SolicitudTramite, SolicitudTramite_secretari
 from db.db import engine
 from model.SolicitudTramite import solicitudes_de_tramites
 import logging
+import os
 
 
 solicitud_de_tramites_Router = APIRouter()
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+os.makedirs('log/solicitudes-de-tramites', exist_ok=True)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/solicitudes-de-tramites/registro.log", filemode = 'w',)
 
 @solicitud_de_tramites_Router.get("/solicitud-de-tramite", response_model=List[SolicitudTramite])
 def get_solicitud_de_tramite():

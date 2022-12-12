@@ -10,10 +10,13 @@ from schema.Region import Region, RegionUpdate
 from db.db import engine
 from model.Region import regiones
 import logging
-
+import os
 
 regiones_Router = APIRouter()
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/Registro.log", filemode = 'w',)
+
+os.makedirs('log/regiones', exist_ok=True)
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/regiones/Registro.log", filemode = 'w',)
 
 @regiones_Router.get("/regiones", response_model=List[Region])
 def get_regiones():

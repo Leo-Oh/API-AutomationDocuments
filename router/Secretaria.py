@@ -9,10 +9,11 @@ from schema.Secretaria import Secretaria, SecretariaSettingsUpdate, SecretariaUp
 from db.db import engine
 from model.Secretaria import secretarias
 import logging
-
+import os
 
 secretarias_Router = APIRouter()
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+os.makedirs('log/secretarias', exist_ok=True)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/secretarias/registro.log", filemode = 'w',)
 
 @secretarias_Router.get("/secretarias", response_model=List[Secretaria])
 def get_secretarias():

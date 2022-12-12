@@ -40,7 +40,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-makedirs('log', exist_ok=True)
+
 
 app.include_router(regiones_Router,prefix='/api',tags=["Regiones"])
 app.include_router(facultades_Router,prefix='/api',tags=["Facultades"])

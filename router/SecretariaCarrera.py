@@ -9,10 +9,11 @@ from db.db import engine
 from schema.SecretariaCarrera import SecretariaCarrera
 from model.SecretariaCarrera import secretarias_carreras
 import logging
-
+import os
 
 secretariasCarreras_Router = APIRouter()
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+os.makedirs('log/secretarias-carreras', exist_ok=True)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/secretarias-carreras/registro.log", filemode = 'w',)
 
 @secretariasCarreras_Router.get("/secretarias-carreras", response_model=List[SecretariaCarrera])
 def get_secretarias_carreras():

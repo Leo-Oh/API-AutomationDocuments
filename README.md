@@ -63,6 +63,23 @@ o bien
     pip3 install -r requirements.txt
 ~~~
 
+En caso de no funcionar se puede instalar las librerias principales:
+
+- `uvicorn`
+- `fastapi`
+- `python-dotenv`
+- `SQLAlchemy`
+- `PyMySQL`
+- `cryptography`
+- `pydantic[email]`
+- `Werkzeug`
+- `pyjwt`
+- `face-recognition`
+- `opencv-python`
+- `keras`
+- `tensorflow`
+- `python-multipart`
+
    
 ## 4. Ejecutar la API
 

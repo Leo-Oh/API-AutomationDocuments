@@ -10,6 +10,7 @@ from modules.verify_uv_credential import is_uv_credential
 
 arhivosVerificacionTramites_Router = APIRouter()
 
+
 @arhivosVerificacionTramites_Router.post("/subir/verificar-credencial-uv")
 async def upload_file(file_credential: UploadFile = File(...)):
     makedirs('uploads/credential', exist_ok=True)

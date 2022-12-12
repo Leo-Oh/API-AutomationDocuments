@@ -10,10 +10,11 @@ from db.db import engine
 from schema.FacultadCarrera import FacultadCarrera
 from model.FacultadCarrera import facultades_carreras
 import logging
-
+import os 
 
 facultadesCarreras_Router = APIRouter()
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+os.makedirs('log/facultades-carreras', exist_ok=True)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/facultades-carreras/registro.log", filemode = 'w',)
 
 @facultadesCarreras_Router.get("/facultades-carreras", response_model=List[FacultadCarrera])
 def get_facultades_carreras():
