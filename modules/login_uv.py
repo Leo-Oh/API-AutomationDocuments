@@ -33,10 +33,8 @@ def get_user_uv(user="", password=""):
     driver.get('https://dsia.uv.mx/miuv/escritorio/login.aspx')
     #print(driver.page_source)
 
-
     USERNAME = user
-    PASSWORD = password
-  
+    PASSWORD = password  
     try:
         #driver = webdriver.Chrome(options=options, executable_path=DRIVER_PATH)
         
