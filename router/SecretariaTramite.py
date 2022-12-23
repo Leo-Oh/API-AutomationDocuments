@@ -3,6 +3,7 @@ from fastapi import APIRouter, Response, Header
 from fastapi.responses import JSONResponse 
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
+from sqlalchemy.sql import text
 
 from db.db import engine
 
@@ -12,8 +13,8 @@ import logging
 import os
 
 secretariasTramites_Router = APIRouter()
-os.makedirs('log/secretarias-tramites', exist_ok=True)
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/secretarias-tramites/registro.log", filemode = 'w',)
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
 @secretariasTramites_Router.get("/secretarias-tramites", response_model=List[SecretariaTramite])
 def get_secretarias_tramites():
@@ -32,7 +33,7 @@ def get_secretarias_tramites():
         return Response(status_code= SERVER_ERROR )
 
 
-@secretariasTramites_Router.get("/secretaria-tramite/{id_secretaria}", response_model=List[SecretariaTramite])
+@secretariasTramites_Router.get("/secretaria-tramite/secretaria/{id_secretaria}", response_model=List[SecretariaTramite])
 def get_tramites_by_id_secretaria(id_secretaria:int):
     try:
         with engine.connect() as conn:
@@ -47,7 +48,7 @@ def get_tramites_by_id_secretaria(id_secretaria:int):
         return Response(status_code= SERVER_ERROR )
 
 
-@secretariasTramites_Router.get("/secretaria-tramite/{id_tramites}", response_model=List[SecretariaTramite])
+@secretariasTramites_Router.get("/secretaria-tramite/tramite/{id_tramites}", response_model=List[SecretariaTramite])
 def get_secretarias_by_id_tramite(id_tramites:int):
     try:
         with engine.connect() as conn:
@@ -66,12 +67,15 @@ def get_secretarias_by_id_tramite(id_tramites:int):
 def check_if_exists_relation_with_secretaria_and_tramite(id_secretaria:int, id_tramite:int):
     try:
         with engine.connect() as conn:
-            result = conn.execute(secretarias_tramites.select().where(secretarias_tramites.c.id_secretarias == id_secretaria and secretarias_tramites.c.id_tramites == id_tramite)).first()
-        if(result):
-            logging.info(f"Se verifico la secretaria con el ID: {id_secretaria} y el tramite con el ID: {id_tramite}")
-            return result
-        else:
-            return Response(status_code=HTTP_204_NO_CONTENT)
+            #result = conn.execute(secretarias_tramites.select().where(secretarias_tramites.c.id_secretarias == id_secretaria and secretarias_tramites.c.id_tramites == id_tramite)).first()
+            sql_query = text(f'SELECT * FROM secretarias_tramites WHERE id_secretarias = {id_secretaria} AND id_tramites = {id_tramite}')
+            result = conn.execute(sql_query).first()
+            
+            if(result):
+                logging.info(f"Se verifico la secretaria con el ID: {id_secretaria} y el tramite con el ID: {id_tramite}")
+                return result
+            else:
+                return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
         logging.error(f"Error al verificar la secretaria con el ID: {id_secretaria} y el tramite con el ID: {id_tramite} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )

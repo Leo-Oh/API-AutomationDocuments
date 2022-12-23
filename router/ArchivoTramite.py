@@ -18,12 +18,12 @@ async def upload_file(file_document: UploadFile = File(...)):
     archivo=["jpg","jpeg","png","pdf","doc"]
     
     makedirs('uploads', exist_ok=True)
-    makedirs('uploads/tramites', exist_ok=True)
+    makedirs('uploads/solicitudes', exist_ok=True)
     
     file_name_document = pathlib.Path(file_document.filename)
     
     if file_name_document.suffix[1:] in archivo:
-        with open(getcwd() + "/uploads/tramites/" + str(file_new_name) + file_name_document.suffix , "wb") as myfile_document:
+        with open(getcwd() + "/uploads/solicitudes/" + str(file_new_name) + file_name_document.suffix , "wb") as myfile_document:
             content = await file_document.read()
             myfile_document.write(content)
             myfile_document.close()
@@ -43,19 +43,19 @@ async def upload_file(file_document: UploadFile = File(...)):
 
 @arhivosTramites_Router.get("/archivo/{nombre_archivo}")
 def get_file( nombre_archivo: str):
-    return FileResponse(getcwd() + "/uploads/"+ nombre_archivo)
+    return FileResponse(getcwd() + "/uploads/solicitudes"+ nombre_archivo)
 
 
 
 @arhivosTramites_Router.get("/descargar/{nombre_archivo}")
 def download_file( nombre_archivo: str):
-    return FileResponse(getcwd() + "/uploads/" + nombre_archivo, media_type="application/octet-stream", filename=nombre_archivo)
+    return FileResponse(getcwd() + "/uploads/solicitudes" + nombre_archivo, media_type="application/octet-stream", filename=nombre_archivo)
 
 
 @arhivosTramites_Router.delete("/borrar/{nombre_archivo}")
 def delete_file(nombre_archivo: str):
     try:
-        remove(getcwd() + "/uploads/" + nombre_archivo)
+        remove(getcwd() + "/uploads/solicitudes" + nombre_archivo)
         return JSONResponse(content={
             "removed": True
         }, status_code=200)

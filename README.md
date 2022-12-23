@@ -79,6 +79,8 @@ En caso de no funcionar se puede instalar las librerias principales:
 - `keras`
 - `tensorflow`
 - `python-multipart`
+- `webdriver_manager`
+
 
    
 ## 4. Ejecutar la API
@@ -126,13 +128,13 @@ En caso de no funcionar se puede instalar las librerias principales:
 ## Correr imagen de mysql asignando la contraseña
 
 ~~~bash
-    sudo docker run -d -p 3306:3306 --name mysql-db-container  -e MYSQL_ROOT_PASSWORD=password --mount src=mysql-db,dst=/var/lib/mysql mysql
+    sudo docker run -d -p 3306:3306 --name mysql-db-container  -e MYSQL_ROOT_PASSWORD=Password.1 --mount src=mysql-db,dst=/var/lib/mysql mysql
 ~~~
 
 ## Ingresar al gestor de base de datos para crear la base de datos
 
 ~~~bash
-    sudo docker exec -it mysql-db  mysql -p
+    sudo docker exec -it mysql-db-container  mysql -p
 ~~~
 
 

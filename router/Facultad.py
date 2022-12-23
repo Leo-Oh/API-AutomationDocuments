@@ -13,8 +13,7 @@ import os
 
 facultades_Router = APIRouter()
 
-os.makedirs('log/facultades', exist_ok=True)
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/facultades/registro.log", filemode = 'w',)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
 @facultades_Router.get("/facultades", response_model=List[Facultad])
 def get_facultades():
@@ -30,9 +29,29 @@ def get_facultades():
     except Exception as exception_error:
         logging.error(f"Error al obtener información de las facultades ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
-   
-@facultades_Router.get("/facultad/{id_facultad}", response_model=Facultad)
+    
+
+@facultades_Router.get("/facultad/region/{id_region}", response_model=List[Facultad])
+def get_facultad_by_id_region(id_region: int):
+    try:
+        with engine.connect() as conn:
+            print("running regions")
+            result = conn.execute(facultades.select().where(facultades.c.id_regiones == id_region)).fetchall()
+            #result = select(facultades).where(facultades.c.id_regiones == "1" and facultades.c.id == "2")
+            print(result)
+            if(result):
+                logging.info(f"Se obtuvo información de las facultades de la region con el ID: {id_region}")
+                return result
+            else:
+                return Response(status_code=HTTP_204_NO_CONTENT)
+    except Exception as exception_error:
+        logging.error(f"Error al obtener información de las facultades de la region con el ID: {id_region} ||| {exception_error}") 
+        return Response(status_code= SERVER_ERROR )
+
+
+@facultades_Router.get("/facultad/facultad/{id_facultad}", response_model=Facultad)
 def get_facultad_by_id_facultad(id_facultad: int):
+    print("Hola")
     try:
         with engine.connect() as conn:
             result = conn.execute(facultades.select().where(facultades.c.id == id_facultad)).first()
@@ -45,31 +64,18 @@ def get_facultad_by_id_facultad(id_facultad: int):
         logging.error(f"Error al obtener información de la facultad con el ID : {id_facultad} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
 
-@facultades_Router.get("/facultad/{id_region}", response_model=List[Facultad])
-def get_facultad_by_id_region_and_by_id_facultad(id_region: int):
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(facultades.select().where(facultades.c.id_regiones == id_region)).fetchall()
-        if(result):
-            logging.info(f"Se obtuvo información de las facultades de la region con el ID: {id_region}")
-            return result
-        else:
-            return Response(status_code=HTTP_204_NO_CONTENT)
-    except Exception as exception_error:
-        logging.error(f"Error al obtener información de las facultades de la region con el ID: {id_region} ||| {exception_error}") 
-        return Response(status_code= SERVER_ERROR )
 
 
-@facultades_Router.get("/facultad/{id_region}/{id_facultad}", response_model=Facultad)
+@facultades_Router.get("/facultad/region-facultad/{id_region}/{id_facultad}", response_model=Facultad)
 def get_facultad_by_id_region_and_by_id_facultad(id_region: int, id_facultad: int):
     try:
         with engine.connect() as conn:
             result = conn.execute(facultades.select().where(facultades.c.id == id_facultad and facultades.c.id_regiones == id_region)).first()
-        if(result):
-            logging.info(f"Se obtuvo información de la facultad con el ID: {id_facultad} de la region con el ID: {id_region}")
-            return result
-        else:
-            return Response(status_code=HTTP_204_NO_CONTENT)
+            if(result):
+                logging.info(f"Se obtuvo información de la facultad con el ID: {id_facultad} de la region con el ID: {id_region}")
+                return result
+            else:
+                return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
         logging.error(f"Error al obtener información de la facultad con el ID : {id_facultad} y la region con el ID: {id_region} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
@@ -107,12 +113,12 @@ def update_facultad(data_update: FacultadUpdate, id_region: int, id_facultad: in
         return Response(status_code= SERVER_ERROR )
         
 
-@facultades_Router.delete("/facultad/{id_region}/{id_facultad}", status_code=HTTP_204_NO_CONTENT)
-def delete_facultad(id_region:int, id_facultad: str):
+@facultades_Router.delete("/facultad/region-facultad/{id_region}/{id_facultad}", status_code=HTTP_204_NO_CONTENT)
+def delete_facultad(id_region:int, id_facultad: int):
     try:
         with engine.connect() as conn:
-            conn.execute(facultades.delete().where(facultades.c.id == id_facultad and facultades.c.id_regiones == id_region))
-        
+            conn.execute(facultades.delete().where(facultades.c.id_regiones == id_region and facultades.c.id == id_facultad))
+            
         logging.critical(f"Facultad con el ID {id_facultad} de la region {id_region} eliminada correctamente")
         return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:

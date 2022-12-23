@@ -11,7 +11,7 @@ class Secretaria(BaseModel):
     turno: str
     telefono: Optional[str]
     matricula: str
-    correo: str
+    correo: EmailStr
     contrasena: str
     direccion: Optional[str]
     foto_perfil: Optional[str]
@@ -24,7 +24,7 @@ class SecretariaUpdate(BaseModel):
     turno: str
     telefono: Optional[str]
     matricula: str
-    correo: str
+    correo: EmailStr
     contrasena: str
     direccion: Optional[str]
     foto_perfil: Optional[str]

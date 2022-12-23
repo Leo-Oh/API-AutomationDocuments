@@ -5,23 +5,28 @@ from typing import Optional
 class Estudiante(BaseModel):
     id: Optional[int]
     id_carreras: int
-    nombre: str
-    apellido_paterno: str
-    apellido_materno: str
+    id_facultades: int
+    nombre_completo: str
+    #nombre: str
+    #apellido_paterno: str
+    #apellido_materno: str
     matricula: str
     correo: EmailStr
     contrasena: str
-    semestre: str
+    semestre: int
     telefono: Optional[str]
     foto_perfil: Optional[str]
 
 class EstudianteUpdate(BaseModel):
     id_carreras: int
-    nombre: str
-    apellido_paterno: str
-    apellido_materno: str
+    id_facultades: int
+    nombre_completo: str
+    #apellido_paterno: str
+    #apellido_materno: str
+    matricula: str
+    correo: EmailStr
     contrasena: str
-    semestre: str
+    semestre: int
     telefono: Optional[str]
     foto_perfil: Optional[str]
     

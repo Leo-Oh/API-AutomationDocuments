@@ -12,9 +12,8 @@ import logging
 import os
 
 carreras_Router = APIRouter()
-os.makedirs('log/carreras', exist_ok=True)
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/carreras/registro.log", filemode = 'w',)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
 @carreras_Router.get("/carreras", response_model=List[Carrera])
 def get_carreras():

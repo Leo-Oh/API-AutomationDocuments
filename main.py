@@ -50,17 +50,14 @@ app.include_router(secretarias_Router,prefix='/api',tags=["Secretarias"])
 app.include_router(tramites_Router,prefix='/api',tags=["Tramites"])
 app.include_router(secretariasTramites_Router,prefix='/api',tags=["Secretarias-Tramites"])
 app.include_router(secretariasCarreras_Router,prefix='/api',tags=["Secretarias-Carreras"])
-app.include_router(estudiantes_Router,prefix='/api',tags=["Estudiantes"])
-app.include_router(solicitud_de_tramites_Router,prefix='/api',tags=["Solicitud de tramites"])
 
+app.include_router(estudiantes_Router,prefix='/api',tags=["Estudiantes"])
 app.include_router(administradores_Router,prefix='/api',tags=["Administrador"])
+app.include_router(solicitud_de_tramites_Router,prefix='/api',tags=["Solicitud de tramites"])
 
 app.include_router(arhivosVerificacionTramites_Router,prefix='/api/files/verificacion-tramites',tags=["Archvivos para la verificación de tramites"])
 app.include_router(arhivosTramites_Router,prefix='/api/files/tramites',tags=["Archvivos que mandan las secretarias a los estudiantes"])
+
 load_dotenv()
-
-
-
-
 if __name__ == "__main__":
     uvicorn.run(app, port=1001, host="0.0.0.0")

@@ -12,4 +12,4 @@ facultades_carreras = Table('facultades_carreras', meta_data,
 )
 
 meta_data.bind = engine
-meta_data.create_all()  
+meta_data.create_all()

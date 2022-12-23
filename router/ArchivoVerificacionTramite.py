@@ -12,7 +12,7 @@ arhivosVerificacionTramites_Router = APIRouter()
 
 
 @arhivosVerificacionTramites_Router.post("/subir/verificar-credencial-uv")
-async def upload_file(file_credential: UploadFile = File(...)):
+async def upload_file_verify_uv_card(file_credential: UploadFile = File(...)):
     makedirs('uploads/credential', exist_ok=True)
 
     file_new_name = uuid.uuid4()

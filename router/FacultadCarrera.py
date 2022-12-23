@@ -4,6 +4,8 @@ from fastapi import APIRouter, Response, Header
 from fastapi.responses import JSONResponse 
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
+from sqlalchemy.sql import text
+
 
 from db.db import engine
 
@@ -13,8 +15,7 @@ import logging
 import os 
 
 facultadesCarreras_Router = APIRouter()
-os.makedirs('log/facultades-carreras', exist_ok=True)
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/facultades-carreras/registro.log", filemode = 'w',)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
 @facultadesCarreras_Router.get("/facultades-carreras", response_model=List[FacultadCarrera])
 def get_facultades_carreras():
@@ -33,7 +34,7 @@ def get_facultades_carreras():
         return Response(status_code= SERVER_ERROR )
 
 
-@facultadesCarreras_Router.get("/facultades-carreras/{id_facultad}", response_model=List[FacultadCarrera])
+@facultadesCarreras_Router.get("/facultades-carreras/facultad/{id_facultad}", response_model=List[FacultadCarrera])
 def get_carreras_by_id_facultad(id_facultad:int):
     try:
         with engine.connect() as conn:
@@ -48,7 +49,7 @@ def get_carreras_by_id_facultad(id_facultad:int):
         return Response(status_code= SERVER_ERROR )
 
 
-@facultadesCarreras_Router.get("/facultades-carreras/{id_carrera}", response_model=List[FacultadCarrera])
+@facultadesCarreras_Router.get("/facultades-carreras/carrera/{id_carrera}", response_model=List[FacultadCarrera])
 def get_facultades_by_id_carrera(id_carrera:int):
     try:
         with engine.connect() as conn:
@@ -63,20 +64,24 @@ def get_facultades_by_id_carrera(id_carrera:int):
         return Response(status_code= SERVER_ERROR )
 
 
-@facultadesCarreras_Router.get("/facultades-carreras/{id_facultad}/{id_carrera}", response_model=FacultadCarrera )
+@facultadesCarreras_Router.get("/facultades-carreras/facultad-carrera/{id_facultad}/{id_carrera}", response_model=FacultadCarrera )
 def check_if_exists_relation_with_facultad_carrera(id_facultad:int, id_carrera:int):
     try:
         with engine.connect() as conn:
-            result = conn.execute(facultades_carreras.select().where(facultades_carreras.c.id_facultades == id_facultad and facultades_carreras.c.id_carreras == id_carrera)).fetchall()
-        if(result):
-            logging.info(f"Se verifico la facultad con el ID: {id_facultad} y la carrera con el ID: {id_carrera}")
-            return result
-        else:
-            return Response(status_code=HTTP_204_NO_CONTENT)
+            
+            sql_query = text(f'SELECT * FROM facultades_carreras WHERE id_facultades = {id_facultad} AND id_carreras = {id_carrera}')
+            result = conn.execute(sql_query).first()
+ 
+            if(result):
+                logging.info(f"Se verifico la facultad con el ID: {id_facultad} y la carrera con el ID: {id_carrera}")
+                return result
+            else:
+                return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
         logging.error(f"Error al verificar la facultad con el ID: {id_facultad} y la carrera con el ID: {id_carrera} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
 
+    
     
 @facultadesCarreras_Router.post("/facultades-carreras", status_code=HTTP_201_CREATED)
 def create_facultad_carrera(data_facultadCarrera: FacultadCarrera):
@@ -87,7 +92,7 @@ def create_facultad_carrera(data_facultadCarrera: FacultadCarrera):
         logging.info(f"Facultad con ID: {data_facultadCarrera.id_facultades} y carrera con ID: {data_facultadCarrera.id_carreras} creados correctamente")
         return Response(status_code=HTTP_201_CREATED)
     except Exception as exception_error:
-        logging.error(f"Error al crear la facultad con ID: {data_facultadCarrera.facultad_id} y carrera con ID: {data_facultadCarrera.carrera_id} ||| {exception_error}")
+        logging.error(f"Error al crear la facultad con ID: {data_facultadCarrera.id_facultades} y carrera con ID: {data_facultadCarrera.id_carrerasyyyyyyy} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
   
@@ -96,11 +101,11 @@ def update_facultad_carrera(data_update: FacultadCarrera, facultad_id: int, carr
     try:
         with engine.connect() as conn:
             conn.execute(facultades_carreras.update().values(
-                facultad_id = data_update.facultad_id,
-                carrera_id = data_update.carrera_id,
-            ).where(facultades_carreras.c.facultades_id == facultad_id and facultades_carreras.c.carreras_id == carrera_id ))
+                id_facultades = data_update.id_facultades,
+                id_carreras = data_update.id_carreras,
+            ).where(facultades_carreras.c.id_facultades == facultad_id and facultades_carreras.c.id_carreras == carrera_id ))
 
-            result = conn.execute(facultades_carreras.select().where(facultades_carreras.c.facultades_id == facultad_id and facultades_carreras.c.carreras_id == carrera_id)).first()
+            result = conn.execute(facultades_carreras.select().where(facultades_carreras.c.id_facultades == facultad_id and facultades_carreras.c.id_carreras == carrera_id)).first()
 
         logging.warning(f"Facultad con el ID: {data_update.facultad_id} y la carrera con el ID: {data_update.carrera_id} actualizada correctamente")
         return result

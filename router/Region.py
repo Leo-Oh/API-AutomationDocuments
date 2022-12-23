@@ -14,9 +14,8 @@ import os
 
 regiones_Router = APIRouter()
 
-os.makedirs('log/regiones', exist_ok=True)
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/regiones/Registro.log", filemode = 'w',)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/Registro.log", filemode = 'w',)
 
 @regiones_Router.get("/regiones", response_model=List[Region])
 def get_regiones():
@@ -89,7 +88,7 @@ def delete_region(id_regiones: int):
     try:
         with engine.connect() as conn:
             conn.execute(regiones.delete().where(regiones.c.id == id_regiones))
-        logging.critical(f"Region eliminada correctamente {id_regiones}: {exception_error}")
+        logging.critical(f"Region eliminada correctamente {id_regiones}")
         return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
         logging.error(f"Error al eliminar la facultad {id_regiones} ||| {exception_error}")

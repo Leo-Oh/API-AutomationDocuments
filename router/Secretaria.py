@@ -2,18 +2,20 @@ from distutils.log import error
 from xmlrpc.client import SERVER_ERROR
 from fastapi import APIRouter, Response, Header
 from fastapi.responses import JSONResponse 
-from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 from typing import List
 
 from schema.Secretaria import Secretaria, SecretariaSettingsUpdate, SecretariaUpdate
 from db.db import engine
 from model.Secretaria import secretarias
 import logging
-import os
+
+from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.sql import text
 
 secretarias_Router = APIRouter()
-os.makedirs('log/secretarias', exist_ok=True)
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/secretarias/registro.log", filemode = 'w',)
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
 @secretarias_Router.get("/secretarias", response_model=List[Secretaria])
 def get_secretarias():
@@ -30,7 +32,7 @@ def get_secretarias():
         logging.error(f"Error al obtener información de las secretarias ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
    
-@secretarias_Router.get("/secretaria/{id_secretaria}", response_model=Secretaria)
+@secretarias_Router.get("/secretaria/secretaria/{id_secretaria}", response_model=Secretaria)
 def get_secretaria_by_id_secretaria(id_secretaria: int):
     try:
         with engine.connect() as conn:
@@ -44,7 +46,7 @@ def get_secretaria_by_id_secretaria(id_secretaria: int):
         logging.error(f"Error al obtener información de la secretaria con el ID : {id_secretaria} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
 
-@secretarias_Router.get("/secretaria/{id_facultad}", response_model=List[Secretaria])
+@secretarias_Router.get("/secretaria/facultad/{id_facultad}", response_model=List[Secretaria])
 def get_secretarias_by_id_facultad(id_facultad: int):
     try:
         with engine.connect() as conn:
@@ -58,11 +60,15 @@ def get_secretarias_by_id_facultad(id_facultad: int):
         logging.error(f"Error al obtener información de la secretarias  de la facultad con el ID: {id_facultad} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
 
-@secretarias_Router.get("/secretaria/{id_facultad}/{id_secretaria}", response_model=Secretaria)
+@secretarias_Router.get("/secretaria/facultad-secretaria/{id_facultad}/{id_secretaria}", response_model=Secretaria)
 def get_secretaria_by_id_facultad_and_by_id_secretaria(id_facultad: int, id_secretaria: int ):
     try:
         with engine.connect() as conn:
-            result = conn.execute(secretarias.select().where(secretarias.c.id == id_secretaria and secretarias.c.id_facultades == id_facultad)).first()
+            #result = conn.execute(secretarias.select().where(secretarias.c.id == id_secretaria and secretarias.c.id_facultades == id_facultad)).first()
+            sql_query = text(f'SELECT * FROM secretarias WHERE id = {id_secretaria} AND id_facultades = {id_facultad}')
+            result = conn.execute(sql_query).first()
+            
+            
         if(result):
             logging.info(f"Se obtuvo información de la secretaria con el ID: {id_secretaria} de la facultad con el ID: {id_facultad}")
             return result
@@ -89,7 +95,7 @@ def create_secretaria(data_secretaria: Secretaria):
         logging.info(f"Secretaria {data_secretaria.nombre} creada correctamente")
         return Response(status_code=HTTP_201_CREATED)
     except Exception as exception_error:
-        logging.error(f"Error al crear la facultad {data_secretaria.nombre} ||| {exception_error}")
+        logging.error(f"Error al crear la secretaria {data_secretaria.nombre} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
 
@@ -101,7 +107,7 @@ def update_secretaria(data_update: SecretariaUpdate, id_facultad:int, id_secreta
             encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
 
             conn.execute(secretarias.update().values(
-                id_facultades = data_update.nombre,    
+                id_facultades = data_update.id_facultades,    
                 nombre = data_update.nombre,
                 apellido_paterno = data_update.apellido_paterno,
                 apellido_materno = data_update.apellido_materno,

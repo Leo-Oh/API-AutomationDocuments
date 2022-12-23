@@ -12,8 +12,8 @@ import logging
 import os
 
 tramites_Router = APIRouter()
-os.makedirs('log/tramites', exist_ok=True)
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/tramites/registro.log", filemode = 'w',)
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
 @tramites_Router.get("/tramites", response_model=List[Tramite])
 def get_tramites():

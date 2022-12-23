@@ -3,6 +3,7 @@ from fastapi import APIRouter, Response, Header
 from fastapi.responses import JSONResponse 
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
+from sqlalchemy.sql import text
 
 from db.db import engine
 
@@ -12,8 +13,8 @@ import logging
 import os
 
 secretariasCarreras_Router = APIRouter()
-os.makedirs('log/secretarias-carreras', exist_ok=True)
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/secretarias-carreras/registro.log", filemode = 'w',)
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
 @secretariasCarreras_Router.get("/secretarias-carreras", response_model=List[SecretariaCarrera])
 def get_secretarias_carreras():
@@ -32,7 +33,7 @@ def get_secretarias_carreras():
         return Response(status_code= SERVER_ERROR )
 
 
-@secretariasCarreras_Router.get("/secretaria-carrera/{id_secretaria}", response_model=List[SecretariaCarrera])
+@secretariasCarreras_Router.get("/secretaria-carrera/secretaria/{id_secretaria}", response_model=List[SecretariaCarrera])
 def get_carreras_by_id_secretaria(id_secretaria:int):
     try:
         with engine.connect() as conn:
@@ -47,7 +48,7 @@ def get_carreras_by_id_secretaria(id_secretaria:int):
         return Response(status_code= SERVER_ERROR )
 
 
-@secretariasCarreras_Router.get("/secretaria-carrera/{id_carrera}", response_model=List[SecretariaCarrera])
+@secretariasCarreras_Router.get("/secretaria-carrera/carrera/{id_carrera}", response_model=List[SecretariaCarrera])
 def get_secretarias_by_id_carrera(id_carrera:int):
     try:
         with engine.connect() as conn:
@@ -66,12 +67,15 @@ def get_secretarias_by_id_carrera(id_carrera:int):
 def check_if_exists_relation_with_secretaria_and_carrera(id_secretaria:int, id_carrera:int):
     try:
         with engine.connect() as conn:
-            result = conn.execute(secretarias_carreras.select().where(secretarias_carreras.c.id_secretarias == id_secretaria and secretarias_carreras.c.id_carreras == id_carrera)).first()
-        if(result):
-            logging.info(f"Se verifico la secretaria con el ID: {id_secretaria} y el carrera con el ID: {id_carrera}")
-            return result
-        else:
-            return Response(status_code=HTTP_204_NO_CONTENT)
+            #result = conn.execute(secretarias_carreras.select().where(secretarias_carreras.c.id_secretarias == id_secretaria and secretarias_carreras.c.id_carreras == id_carrera)).first()
+            sql_query = text(f'SELECT * FROM secretarias_carreras WHERE id_secretarias = {id_secretaria} AND id_carreras = {id_carrera}')
+            result = conn.execute(sql_query).first()
+            
+            if(result):
+                logging.info(f"Se verifico la secretaria con el ID: {id_secretaria} y el carrera con el ID: {id_carrera}")
+                return result
+            else:
+                return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
         logging.error(f"Error al verificar la secretaria con el ID: {id_secretaria} y el carrera con el ID: {id_carrera} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
@@ -108,12 +112,12 @@ def update_secretaria_carrera(data_update: SecretariaCarrera, id_secretaria: int
         return Response(status_code= SERVER_ERROR )
         
 
-@secretariasCarreras_Router.delete("/facultad/{id_secretaria}/{id_carrera}", status_code=HTTP_204_NO_CONTENT)
-def delete_secretaria_carrera(id_secretaria:int, id_carrera: int):
+@secretariasCarreras_Router.delete("/facultad/secretaria-carrera/{id_carrera}/{id_secretaria}", status_code=HTTP_204_NO_CONTENT)
+def delete_secretaria_carrera(id_carrera:int, id_secretaria: int):
     try:
         with engine.connect() as conn:
-            conn.execute(secretarias_carreras.delete().where(secretarias_carreras.c.id_secretarias == id_secretaria and secretarias_carreras.c.id_carreras == id_carrera ))
-        
+            conn.execute(secretarias_carreras.delete().where(secretarias_carreras.c.id_carreras == id_carrera and secretarias_carreras.c.id_secretarias == id_secretaria))
+            
         logging.critical(f"la relacion de la secretaria con el ID: {id_secretaria} de la carreras con el ID: {id_carrera} eliminada correctamente")
         return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
