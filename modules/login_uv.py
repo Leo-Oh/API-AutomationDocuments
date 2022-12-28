@@ -17,9 +17,9 @@ def get_user_uv(user="", password=""):
     #options.add_argument("--window-size=1920,1200")
     #driver = webdriver.Chrome(executable_path=DRIVER_PATH)
 
-
+      
     options = Options()
-    options.add_argument("start-maximized"); 
+    #options.add_argument("start-maximized"); 
     options.add_argument("disable-infobars"); 
     options.add_argument("--disable-extensions"); 
     options.add_argument("--disable-gpu"); 
@@ -77,3 +77,7 @@ def get_user_uv(user="", password=""):
         #print(driver.page_source)
     finally:
         driver.quit()
+
+
+if __name__ == "__main__":
+    get_user_uv("zS19004869","Ldmmtz12345")

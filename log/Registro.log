@@ -1,12 +1,12 @@
-2022-12-23 04:30:08,885 : DEBUG : Falling back to TensorFlow client; we recommended you install the Cloud TPU client directly with pip install cloud-tpu-client.
-2022-12-23 04:30:12,181 : DEBUG : Creating converter from 7 to 5
-2022-12-23 04:30:12,182 : DEBUG : Creating converter from 5 to 7
-2022-12-23 04:30:12,182 : DEBUG : Creating converter from 7 to 5
-2022-12-23 04:30:12,183 : DEBUG : Creating converter from 5 to 7
-2022-12-23 04:30:35,608 : INFO : Started server process [1205]
-2022-12-23 04:30:35,609 : INFO : Waiting for application startup.
-2022-12-23 04:30:35,610 : INFO : Application startup complete.
-2022-12-23 04:30:43,132 : INFO : Shutting down
-2022-12-23 04:30:43,234 : INFO : Waiting for application shutdown.
-2022-12-23 04:30:43,234 : INFO : Application shutdown complete.
-2022-12-23 04:30:43,235 : INFO : Finished server process [1205]
+2022-12-28 17:33:02,945 : DEBUG : Falling back to TensorFlow client; we recommended you install the Cloud TPU client directly with pip install cloud-tpu-client.
+2022-12-28 17:33:03,012 : DEBUG : Creating converter from 7 to 5
+2022-12-28 17:33:03,013 : DEBUG : Creating converter from 5 to 7
+2022-12-28 17:33:03,013 : DEBUG : Creating converter from 7 to 5
+2022-12-28 17:33:03,014 : DEBUG : Creating converter from 5 to 7
+2022-12-28 17:33:03,590 : INFO : Started server process [1125]
+2022-12-28 17:33:03,591 : INFO : Waiting for application startup.
+2022-12-28 17:33:03,592 : INFO : Application startup complete.
+2022-12-28 17:43:14,602 : INFO : Shutting down
+2022-12-28 17:43:14,703 : INFO : Waiting for application shutdown.
+2022-12-28 17:43:14,704 : INFO : Application shutdown complete.
+2022-12-28 17:43:14,704 : INFO : Finished server process [1125]

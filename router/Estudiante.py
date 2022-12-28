@@ -9,7 +9,6 @@ from schema.Estudiante import Estudiante, EstudianteAuth, EstudianteSettings, Es
 from db.db import engine
 from model.Estudiante import estudiantes
 import logging
-from sqlalchemy.sql import text
 from modules.login_uv import get_user_uv
 from sqlalchemy.sql import text
 from werkzeug.security import generate_password_hash, check_password_hash

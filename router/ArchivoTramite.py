@@ -43,19 +43,19 @@ async def upload_file(file_document: UploadFile = File(...)):
 
 @arhivosTramites_Router.get("/archivo/{nombre_archivo}")
 def get_file( nombre_archivo: str):
-    return FileResponse(getcwd() + "/uploads/solicitudes"+ nombre_archivo)
+    return FileResponse(getcwd() + "/uploads/solicitudes/"+ nombre_archivo)
 
 
 
 @arhivosTramites_Router.get("/descargar/{nombre_archivo}")
 def download_file( nombre_archivo: str):
-    return FileResponse(getcwd() + "/uploads/solicitudes" + nombre_archivo, media_type="application/octet-stream", filename=nombre_archivo)
+    return FileResponse(getcwd() + "/uploads/solicitudes/" + nombre_archivo, media_type="application/octet-stream", filename=nombre_archivo)
 
 
 @arhivosTramites_Router.delete("/borrar/{nombre_archivo}")
 def delete_file(nombre_archivo: str):
     try:
-        remove(getcwd() + "/uploads/solicitudes" + nombre_archivo)
+        remove(getcwd() + "/uploads/solicitudes/" + nombre_archivo)
         return JSONResponse(content={
             "removed": True
         }, status_code=200)

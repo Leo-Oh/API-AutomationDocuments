@@ -21,7 +21,7 @@ def compare_images(**kwargs):
             known_image = face_recognition.load_image_file(kwargs['Know'])
             known_encoding = face_recognition.face_encodings(known_image)[0]
     except:
-        return "Si no definio la imagen base use el argumento 'Know = Ruta_de_la_imagen.extension', en otro caso no se ningun detecto rostro en la imagen"
+        return "Si no definio la imagen base use el argumento 'Know = Ruta_de_la_imagen.extension', en caso contrario no se detecto el rostro en la imagen"
     else:
         try:
             image = cv2.imread(kwargs['Unknown'])
