@@ -77,7 +77,3 @@ def get_user_uv(user="", password=""):
         #print(driver.page_source)
     finally:
         driver.quit()
-
-
-if __name__ == "__main__":
-    get_user_uv("zS19004869","Ldmmtz12345")

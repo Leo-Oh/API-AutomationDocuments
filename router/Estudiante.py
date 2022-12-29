@@ -14,7 +14,7 @@ from sqlalchemy.sql import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from typing import List
 from functions_jwt import write_token, validate_token
-import os
+
 
 
 
