@@ -261,3 +261,14 @@ def delete_estudiante(id_facultad:int, id_carrera:int, id_estudiante:int, ):
     except Exception as exception_error:
         logging.error(f"Error al eliminar al estudiante con el ID {id_estudiante}  de la  facultad {id_facultad} y la carrera {id_carrera} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
+
+
+@estudiantes_Router.delete("/estudiante/{id_estudiante}", status_code=HTTP_204_NO_CONTENT)
+def delete_estudiante_by_id(id_estudiante:int, ):
+    try:
+        with engine.connect() as conn:
+            conn.execute(estudiantes.delete().where(estudiantes.c.id == id_estudiante ))
+        logging.critical(f"Estudiante con el ID {id_estudiante} eliminado correctamente")
+        return Response(status_code=HTTP_204_NO_CONTENT)
+    except Exception as exception_error:
+        return Response(status_code= SERVER_ERROR )

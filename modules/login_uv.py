@@ -20,6 +20,7 @@ def get_user_uv(user="", password=""):
       
     options = Options()
     #options.add_argument("start-maximized"); 
+    options.add_argument("--headless"); # ejecutar chrome sin abrir la ventana
     options.add_argument("disable-infobars"); 
     options.add_argument("--disable-extensions"); 
     options.add_argument("--disable-gpu"); 
