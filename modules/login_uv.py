@@ -1,3 +1,6 @@
+from os import getcwd, makedirs
+import uuid
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -5,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
+import urllib.request
 
 def get_user_uv(user="", password=""):
 
@@ -51,6 +55,16 @@ def get_user_uv(user="", password=""):
 
         student_tel = driver.find_element(By.XPATH, '//*[@id="content_wucDatosGralAlum1_lblTel"]').text
         student_photo_profile = driver.find_element(By.XPATH, '//*[@id="content_wucDatosGralAlum1_imgFoto"]').get_attribute('src')
+        
+        new_name_picture = uuid.uuid4()
+    
+        makedirs('uploads', exist_ok=True)
+        makedirs('uploads/pictures/', exist_ok=True)
+        
+        new_path_picture = getcwd() + "/uploads/pictures/" + str(new_name_picture)+".png"
+        
+
+        
         university_prog = driver.find_element(By.XPATH, '//*[@id="content_wucDatosGralAlum1_lblProg"]').text
         university_fac = driver.find_element(By.XPATH, '//*[@id="content_wucDatosGralAlum1_lblFac"]').text
 
@@ -58,7 +72,13 @@ def get_user_uv(user="", password=""):
         university_level = driver.find_element(By.XPATH, '//*[@id="content_wucDatosGralAlum1_lblNivel"]').text
         university_per = driver.find_element(By.XPATH, '//*[@id="content_wucDatosGralAlum1_lblPerCur"]').text
 
-    
+        driver.get(student_photo_profile)
+        driver.save_screenshot(new_path_picture)
+        student_photo_profile =  new_path_picture
+        
+        
+        driver.get('https://dsiapes.uv.mx/MiUVestudiantes/escritorio/smutiles.aspx#')
+        
         student_data = {
             "nombre": full_name.replace('-', ' '),
             "telefono": student_tel,
