@@ -6,7 +6,7 @@ from functions_jwt import write_token
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 from typing import List
 
-from schema.Secretaria import Secretaria, SecretariaAuth, SecretariaSettingsUpdate, SecretariaSettingsUpdatePassword, SecretariaUpdate
+from schema.Secretaria import Secretaria, SecretariaAuth, SecretariaSettingsUpdate, SecretariaSettingsUpdatePassword, SecretariaSettingsUpdateUserPicture, SecretariaUpdate
 from db.db import engine
 from model.Secretaria import secretarias
 import logging
@@ -175,42 +175,44 @@ def update_settings_secretaria(data_update: SecretariaSettingsUpdate, id_faculta
         logging.error(f"Error al actualizar la secretaria con el ID: {id_secretaria} de la facultad con ID: {id_facultad} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
-@secretarias_Router.put("/secretaria/perfil/password/{id_secretaria}", response_model=Secretaria)
-def update_settings_secretaria(data_update: SecretariaSettingsUpdatePassword, id_secretaria:int):
+
+@secretarias_Router.put("/secretaria/perfil/password/{id_facultad}/{id_secretaria}", response_model=Secretaria)
+def update_settings_secretaria_password(data_update: SecretariaSettingsUpdatePassword, id_facultad: int, id_secretaria:int):
     try:
         with engine.connect() as conn:
             encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
             
             conn.execute(secretarias.update().values(
                 contrasena = encryp_passw,
-            ).where(secretarias.c.id == id_secretaria))
+            ).where(secretarias.c.id == id_secretaria and secretarias.c.id_facultades == id_facultad ))
 
-            result = conn.execute(secretarias.select().where(secretarias.c.id == id_secretaria )).first()
+            result = conn.execute(secretarias.select().where(secretarias.c.id == id_secretaria and secretarias.c.id_facultades == id_facultad )).first()
 
-        logging.warning(f"Secretaria con el ID: {id_secretaria} actualizada correctamente")
+        logging.warning(f"Secretaria con el ID: {id_secretaria} de la facultad con ID: {id_facultad} actualizada correctamente")
         return result
     except Exception as exception_error:
-        logging.error(f"Error al actualizar la secretaria con el ID: {id_secretaria}  ||| {exception_error}")
+        logging.error(f"Error al actualizar la secretaria con el ID: {id_secretaria} de la facultad con ID: {id_facultad} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
-
-@secretarias_Router.put("/secretaria/perfil/user-picture/{id_secretaria}", response_model=Secretaria)
-def update_settings_secretaria(data_update: SecretariaSettingsUpdate, id_facultad: int, id_secretaria:int):
+@secretarias_Router.put("/secretaria/perfil/picture/{id_facultad}/{id_secretaria}", response_model=Secretaria)
+def update_settings_secretaria_user_picture(data_update: SecretariaSettingsUpdateUserPicture, id_facultad: int, id_secretaria:int):
     try:
         with engine.connect() as conn:
-            encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
-            
+    
             conn.execute(secretarias.update().values(
-                foto_perfil = data_update.foto_perfil,
-            ).where(secretarias.c.id == id_secretaria ))
+               foto_perfil = data_update.foto_perfil,
+            ).where(secretarias.c.id == id_secretaria and secretarias.c.id_facultades == id_facultad ))
 
-            result = conn.execute(secretarias.select().where(secretarias.c.id == id_secretaria )).first()
+            result = conn.execute(secretarias.select().where(secretarias.c.id == id_secretaria and secretarias.c.id_facultades == id_facultad )).first()
 
-        logging.warning(f"Secretaria con el ID: {id_secretaria} actualizada correctamente")
+        logging.warning(f"Secretaria con el ID: {id_secretaria} de la facultad con ID: {id_facultad} actualizada correctamente")
         return result
     except Exception as exception_error:
-        logging.error(f"Error al actualizar la secretaria con el ID: {id_secretaria}  ||| {exception_error}")
+        logging.error(f"Error al actualizar la secretaria con el ID: {id_secretaria} de la facultad con ID: {id_facultad} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
+
+
+
 
 
 @secretarias_Router.delete("/secretaria/{id_facultad}/{id_secretaria}", status_code=HTTP_204_NO_CONTENT)
