@@ -200,6 +200,32 @@ def estudiantes_verificar_token(token_estudiante:str=Header(default=None)):
   return validate_token(token_estudiante, output=True)
 
 
+@estudiantes_Router.put("/estudiante/{id_estudiante}", response_model=Estudiante)
+def update_estudiante(data_update: EstudianteUpdate,id_estudiante:int):
+    try:
+        with engine.connect() as conn:
+            encryp_passw = generate_password_hash(data_update.contrasena, "pbkdf2:sha256:30", 30)
+
+            conn.execute(estudiantes.update().values(                
+                id_carreras = data_update.id_carreras,
+                id_facultades = data_update.id_facultades,
+                nombre_completo = data_update.nombre_completo,
+                matricula = data_update.matricula,
+                correo = data_update.correo,
+                contrasena = encryp_passw,
+                semestre = data_update.semestre,
+                telefono = data_update.telefono,
+                foto_perfil = data_update.foto_perfil,
+            ).where(estudiantes.c.id == id_estudiante ))
+
+            result = conn.execute(estudiantes.select().where(estudiantes.c.id == id_estudiante )).first()
+        logging.warning(f"Estudiante con el ID: {id_estudiante} actualizado correctamente")
+        return result
+    except Exception as exception_error:
+        logging.error(f"Error al actualizar el estudiante con el ID: {id_estudiante} ||| {exception_error}")
+        return Response(status_code= SERVER_ERROR )
+
+
 @estudiantes_Router.put("/estudiante/{id_facultad}/{id_carrera}/{id_estudiante}", response_model=Estudiante)
 def update_estudiante(data_update: EstudianteUpdate,id_facultad: int, id_carrera: int, id_estudiante:int):
     try:

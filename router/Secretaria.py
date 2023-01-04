@@ -1,11 +1,12 @@
 from distutils.log import error
 from xmlrpc.client import SERVER_ERROR
 from fastapi import APIRouter, Response, Header
-from fastapi.responses import JSONResponse 
+from fastapi.responses import JSONResponse
+from functions_jwt import write_token 
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 from typing import List
 
-from schema.Secretaria import Secretaria, SecretariaSettingsUpdate, SecretariaUpdate
+from schema.Secretaria import Secretaria, SecretariaAuth, SecretariaSettingsUpdate, SecretariaUpdate
 from db.db import engine
 from model.Secretaria import secretarias
 import logging
@@ -77,6 +78,30 @@ def get_secretaria_by_id_facultad_and_by_id_secretaria(id_facultad: int, id_secr
     except Exception as exception_error:
         logging.error(f"Error al obtener información de la secretaria con el ID : {id_secretaria} de la facultad con el ID: {id_facultad} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
+
+@secretarias_Router.post("/secretaria/ingresar")
+def secretarias_ingresar_al_sistema(secretaria : SecretariaAuth):
+  with engine.connect() as conn:
+    if(secretaria.correo != None):
+        result = conn.execute(secretarias.select().where(secretarias.c.correo == secretaria.correo )).first()
+    if(secretaria.matricula != None):
+        result = conn.execute(secretarias.select().where(secretarias.c.matricula == secretaria.matricula )).first()
+
+    print(result[9])
+
+    if result != None:
+        check_passw = check_password_hash(result[9], secretaria.contrasena)
+        if check_passw:
+            return {
+            "status": 200,
+            "message": "Access success",
+            "token" : write_token(secretaria.dict()),
+            "user" : result
+            }
+        else:
+            return Response(status_code=HTTP_401_UNAUTHORIZED)
+    else:
+        return JSONResponse(content={"message": "Usuario no encontrado"}, status_code=404)
 
 
 @secretarias_Router.post("/secretaria", status_code=HTTP_201_CREATED)
