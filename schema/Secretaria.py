@@ -50,10 +50,10 @@ class SecretariaAuth(BaseModel):
 class Secretaria_With_IdFacultad_IdCarrera_IdTramite(BaseModel):
     id: Optional[int]
     id_facultades: Optional[int]
-    id_tramites: Optional[int]
-    id_carreras: Optional[int]
     nombre: Optional[str]
     apellido_paterno: Optional[str]
     apellido_materno: Optional[str]
     turno: Optional[str]
     correo: Optional[str]
+    id_tramites: Optional[int]
+    id_carreras: Optional[int]

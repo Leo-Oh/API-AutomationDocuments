@@ -86,26 +86,7 @@ def get_secretaria_by_id_facultad_id_carrera_id_tramite(id_facultad: int, id_car
     try:
         with engine.connect() as conn:
     
-            sql_query = text(f''' select 
-                             secretarias.id, 
-                             secretarias_tramites.id_tramites,
-                             secretarias_carreras.id_carreras 
-                             secretarias.id_facultades,
-                             secretarias.nombre,
-                             secretarias.apellido_paterno,
-                             secretarias.apellido_materno,
-                             secretarias.turno,
-                             secretarias.correo,
-
-                             
-                             from secretarias_tramites inner join secretarias_carreras 
-                             on secretarias_carreras.id_secretarias = secretarias_tramites.id_secretarias 
-                             inner join secretarias 
-                             on secretarias.id = secretarias_tramites.id_secretarias 
-                             where id_facultades = {id_facultad} 
-                             and wehere id_carreras = {id_carrera}
-                             and where id_tramites = {id_tramite};
-                             ''')
+            sql_query = text(f'select secretarias.id, secretarias.id_facultades, secretarias.nombre,secretarias.apellido_paterno, secretarias.apellido_materno, secretarias.turno,secretarias.correo, secretarias_tramites.id_tramites, secretarias_carreras.id_carreras from secretarias_tramites inner join secretarias_carreras on secretarias_carreras.id_secretarias = secretarias_tramites.id_secretarias inner join secretarias on secretarias.id = secretarias_tramites.id_secretarias where id_facultades = {id_facultad} and id_carreras = {id_carrera} and id_tramites = {id_tramite};')
             result = conn.execute(sql_query).first()
             
         if(result):
