@@ -6,7 +6,7 @@ from functions_jwt import write_token
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 from typing import List
 
-from schema.Secretaria import Secretaria, SecretariaAuth, SecretariaSettingsUpdate, SecretariaSettingsUpdatePassword, SecretariaSettingsUpdateUserPicture, SecretariaUpdate
+from schema.Secretaria import Secretaria, Secretaria_With_IdFacultad_IdCarrera_IdTramite, SecretariaAuth, SecretariaSettingsUpdate, SecretariaSettingsUpdatePassword, SecretariaSettingsUpdateUserPicture, SecretariaUpdate
 from db.db import engine
 from model.Secretaria import secretarias
 import logging
@@ -77,6 +77,44 @@ def get_secretaria_by_id_facultad_and_by_id_secretaria(id_facultad: int, id_secr
             return Response(status_code=HTTP_204_NO_CONTENT)
     except Exception as exception_error:
         logging.error(f"Error al obtener información de la secretaria con el ID : {id_secretaria} de la facultad con el ID: {id_facultad} ||| {exception_error}") 
+        return Response(status_code= SERVER_ERROR )
+
+
+
+@secretarias_Router.get("/secretaria/facultad-secretaria/{id_facultad}/{id_carrera}/{id_tramite}", response_model=List[Secretaria_With_IdFacultad_IdCarrera_IdTramite])
+def get_secretaria_by_id_facultad_id_carrera_id_tramite(id_facultad: int, id_carrera: int, id_tramite: int ):
+    try:
+        with engine.connect() as conn:
+    
+            sql_query = text(f''' select 
+                             secretarias.id, 
+                             secretarias_tramites.id_tramites,
+                             secretarias_carreras.id_carreras 
+                             secretarias.id_facultades,
+                             secretarias.nombre,
+                             secretarias.apellido_paterno,
+                             secretarias.apellido_materno,
+                             secretarias.turno,
+                             secretarias.correo,
+
+                             
+                             from secretarias_tramites inner join secretarias_carreras 
+                             on secretarias_carreras.id_secretarias = secretarias_tramites.id_secretarias 
+                             inner join secretarias 
+                             on secretarias.id = secretarias_tramites.id_secretarias 
+                             where id_facultades = {id_facultad} 
+                             and wehere id_carreras = {id_carrera}
+                             and where id_tramites = {id_tramite};
+                             ''')
+            result = conn.execute(sql_query).first()
+            
+        if(result):
+            logging.info(f"Se obtuvo información de la secretaria con el ID de la facultad: {id_facultad} , ID carrera: {id_carrera} y ID del tramite que realiza: {id_tramite}")
+            return result
+        else:
+            return Response(status_code=HTTP_204_NO_CONTENT)
+    except Exception as exception_error:
+        logging.error(f"Error al obtener información de la secretaria con el ID de la facultad: {id_facultad} , ID carrera: {id_carrera} y ID del tramite que realiza: {id_tramite}||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
 
 @secretarias_Router.post("/secretaria/ingresar")

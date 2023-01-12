@@ -46,3 +46,14 @@ class SecretariaAuth(BaseModel):
     matricula: Optional[str]
     correo : Optional[EmailStr]
     contrasena: str
+    
+class Secretaria_With_IdFacultad_IdCarrera_IdTramite(BaseModel):
+    id
+    id_facultades
+    id_tramites
+    id_carreras
+    nombre
+    apellido_paterno
+    apellido_materno
+    turno
+    correo
