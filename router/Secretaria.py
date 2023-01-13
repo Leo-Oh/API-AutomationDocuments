@@ -81,13 +81,13 @@ def get_secretaria_by_id_facultad_and_by_id_secretaria(id_facultad: int, id_secr
 
 
 
-@secretarias_Router.get("/secretaria/facultad-secretaria/{id_facultad}/{id_carrera}/{id_tramite}", response_model=List[Secretaria_With_IdFacultad_IdCarrera_IdTramite])
+@secretarias_Router.get("/secretaria/facultad-carrera-tramite/{id_facultad}/{id_carrera}/{id_tramite}", response_model=List[Secretaria_With_IdFacultad_IdCarrera_IdTramite])
 def get_secretaria_by_id_facultad_id_carrera_id_tramite(id_facultad: int, id_carrera: int, id_tramite: int ):
     try:
         with engine.connect() as conn:
     
             sql_query = text(f'select secretarias.id, secretarias.id_facultades, secretarias.nombre,secretarias.apellido_paterno, secretarias.apellido_materno, secretarias.turno,secretarias.correo, secretarias_tramites.id_tramites, secretarias_carreras.id_carreras from secretarias_tramites inner join secretarias_carreras on secretarias_carreras.id_secretarias = secretarias_tramites.id_secretarias inner join secretarias on secretarias.id = secretarias_tramites.id_secretarias where id_facultades = {id_facultad} and id_carreras = {id_carrera} and id_tramites = {id_tramite};')
-            result = conn.execute(sql_query).first()
+            result = conn.execute(sql_query).fetchall()
             
         if(result):
             logging.info(f"Se obtuvo información de la secretaria con el ID de la facultad: {id_facultad} , ID carrera: {id_carrera} y ID del tramite que realiza: {id_tramite}")
