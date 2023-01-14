@@ -15,7 +15,7 @@ class SolicitudTramiteAllField(BaseModel):
     datos_adjuntos_secretaria:  Optional[str]
     mensaje_secretaria:  Optional[str]
     fecha_de_solicitud: Optional[datetime]
-    esta: str
+    estado: str
     fecha_de_aprobacion: Optional[datetime]
    
 
