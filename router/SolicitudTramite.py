@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
 
-from schema.SolicitudTramite import SolicitudTramite,SolicitudTramite_update_by_secretaria
+from schema.SolicitudTramite import SolicitudTramite,SolicitudTramite_update_by_secretaria, SolicitudTramiteAllField
 from db.db import engine
 from model.SolicitudTramite import solicitudes_de_tramites
 import logging
@@ -16,7 +16,7 @@ solicitud_de_tramites_Router = APIRouter()
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
-@solicitud_de_tramites_Router.get("/solicitud-de-tramite", response_model=List[SolicitudTramite])
+@solicitud_de_tramites_Router.get("/solicitud-de-tramite", response_model=List[SolicitudTramiteAllField])
 def get_solicitud_de_tramite():
     try:
         with engine.connect() as conn:
@@ -33,7 +33,7 @@ def get_solicitud_de_tramite():
         return Response(status_code= SERVER_ERROR )
    
 
-@solicitud_de_tramites_Router.get("/solicitud-de-tramite/id/{id_solicitud_de_tramite}", response_model=List[SolicitudTramite])
+@solicitud_de_tramites_Router.get("/solicitud-de-tramite/id/{id_solicitud_de_tramite}", response_model=List[SolicitudTramiteAllField])
 def get_solicitud_de_tramites_by_id(id_solicitud_de_tramite: int):
     try:
         with engine.connect() as conn:
@@ -48,7 +48,7 @@ def get_solicitud_de_tramites_by_id(id_solicitud_de_tramite: int):
         return Response(status_code= SERVER_ERROR )
 
 
-@solicitud_de_tramites_Router.get("/solicitud-de-tramite/secretaria/{id_secretaria}", response_model=List[SolicitudTramite])
+@solicitud_de_tramites_Router.get("/solicitud-de-tramite/secretaria/{id_secretaria}", response_model=List[SolicitudTramiteAllField])
 def get_solicitudes_de_tramites_by_id_secretarias(id_secretaria: int):
     try:
         with engine.connect() as conn:
@@ -62,7 +62,7 @@ def get_solicitudes_de_tramites_by_id_secretarias(id_secretaria: int):
         logging.error(f"Error al obtener información de las solicitudes de tramite con el ID de la secretaria: {id_secretaria} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
 
-@solicitud_de_tramites_Router.get("/solicitud-de-tramite/tramite/{id_tramite}", response_model=List[SolicitudTramite])
+@solicitud_de_tramites_Router.get("/solicitud-de-tramite/tramite/{id_tramite}", response_model=List[SolicitudTramiteAllField])
 def get_solicitudes_de_tramites_by_id_tramite(id_tramite: int):
     try:
         with engine.connect() as conn:
@@ -77,7 +77,7 @@ def get_solicitudes_de_tramites_by_id_tramite(id_tramite: int):
         return Response(status_code= SERVER_ERROR )
 
 
-@solicitud_de_tramites_Router.get("/solicitud-de-tramite/carrera/{id_carrera}", response_model=List[SolicitudTramite])
+@solicitud_de_tramites_Router.get("/solicitud-de-tramite/carrera/{id_carrera}", response_model=List[SolicitudTramiteAllField])
 def get_solicitudes_de_tramites_by_id_carrera(id_carrera: int):
     try:
         with engine.connect() as conn:
@@ -91,7 +91,7 @@ def get_solicitudes_de_tramites_by_id_carrera(id_carrera: int):
         logging.error(f"Error al obtener información de las solicitudes de tramites con el ID de la carrera: {id_carrera} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
 
-@solicitud_de_tramites_Router.get("/solicitud-de-tramite/estudiante/{id_estudiante}", response_model=List[SolicitudTramite])
+@solicitud_de_tramites_Router.get("/solicitud-de-tramite/estudiante/{id_estudiante}", response_model=List[SolicitudTramiteAllField])
 def get_solicitudes_de_tramites_by_id_estudiante(id_estudiante: int):
     try:
         with engine.connect() as conn:
