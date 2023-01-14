@@ -11,11 +11,11 @@ class SolicitudTramiteAllField(BaseModel):
     id_tramites: int
     id_carreras: int
     id_estudiantes: int
-    datos_adjuntos_estudiante: str
-    datos_adjuntos_secretaria: str
-    mensaje_secretaria: str
+    datos_adjuntos_estudiante:  Optional[str]
+    datos_adjuntos_secretaria:  Optional[str]
+    mensaje_secretaria:  Optional[str]
     fecha_de_solicitud: Optional[datetime]
-    estado: Optional[str]
+    esta: str
     fecha_de_aprobacion: Optional[datetime]
    
 
@@ -26,12 +26,12 @@ class SolicitudTramite(BaseModel):
     id_tramites: int
     id_carreras: int
     id_estudiantes: int
-    datos_adjuntos_estudiante: str
-    estado: Optional[str]
+    datos_adjuntos_estudiante:  Optional[str]
+    estado: str
     fecha_de_solicitud: Optional[datetime]
 
 class SolicitudTramite_update_by_secretaria(BaseModel):
-    datos_adjuntos_secretaria: str
-    mensaje_secretaria: str
+    datos_adjuntos_secretaria:  Optional[str]
+    mensaje_secretaria:  Optional[str]
     estado: str
     fecha_de_aprobacion: Optional[datetime]
