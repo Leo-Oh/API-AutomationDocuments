@@ -4,7 +4,7 @@ from fastapi import APIRouter, Response, Header
 from fastapi.responses import JSONResponse 
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
-
+from sqlalchemy.sql import text
 from schema.Carrera import Carrera, CarreraUpdate
 from db.db import engine
 from model.Carrera import carreras
@@ -14,6 +14,55 @@ import os
 carreras_Router = APIRouter()
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+
+
+
+
+@carreras_Router.get("/carreras/informacion-completa")
+def get_carreras_full_info():
+    try:
+        with engine.connect() as conn:
+            sql_query = text("""
+                SELECT 
+                    regiones.id AS regiones_id,
+                    regiones.nombre AS regiones_nombre,
+                    
+                    facultades.id AS facultades_id,
+                    facultades.id_regiones AS facultades_id_regiones,
+                    facultades.nombre AS facultades_nombre,
+                    facultades.direccion AS facultades_direccion,
+                    facultades.telefono AS facultades_telefono,
+                    
+                    carreras.id AS carreras_id,
+                    carreras.nombre AS carreras_nombre
+                FROM 
+                    facultades
+                INNER JOIN 
+                    regiones ON facultades.id_regiones = regiones.id
+                INNER JOIN 
+                    facultades_carreras ON facultades.id = facultades_carreras.id_facultades
+                INNER JOIN 
+                    carreras ON facultades_carreras.id_carreras = carreras.id;
+                """)
+            
+
+            
+            result = conn.execute(sql_query).fetchall()
+            
+            if result:
+                logging.info("Se obtuvo información completa de todas las regiones, facultades y carreras")
+                return [dict(row) for row in result]
+
+                
+            else:
+                logging.warning("No se encontró información")
+                return Response(status_code=HTTP_204_NO_CONTENT)
+    
+    except Exception as exception_error:
+        logging.error(f"Error al obtener informacion completa de todas las regiones, facultades y carreras: {exception_error}", exc_info=True)
+        return Response(status_code= SERVER_ERROR )
+
+
 
 @carreras_Router.get("/carreras", response_model=List[Carrera])
 def get_carreras():

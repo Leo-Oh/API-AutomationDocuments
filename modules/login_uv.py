@@ -10,30 +10,37 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 import urllib.request
 
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
 def get_user_uv(user="", password=""):
 
     if(len(user) == 0 or len(password) == 0):
         return "No se ha introducido un usuario o matricula valida"
     
 
-    DRIVER_PATH = '/path/to/chromedriver'
+   # driver = webdriver.Chrome('/path/to/chromedriver')
     #options = Options()
     #options.add_argument("--window-size=1920,1200")
     #driver = webdriver.Chrome(executable_path=DRIVER_PATH)
 
-      
+
+
     options = Options()
-    #options.add_argument("start-maximized"); 
+    options.add_argument("start-maximized"); # SHOW WINDOWS CHROME
     options.add_argument("--headless"); # ejecutar chrome sin abrir la ventana
     options.add_argument("disable-infobars"); 
     options.add_argument("--disable-extensions"); 
     options.add_argument("--disable-gpu"); 
     options.add_argument("--disable-dev-shm-usage"); 
     options.add_argument("--no-sandbox");
-    #options.binary_location = "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-    options.binary_location = "/usr/bin/google-chrome"
-    driver = webdriver.Chrome(chrome_options = options,executable_path=DRIVER_PATH)
+    options.binary_location = "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+    #options.binary_location = "/usr/bin/google-chrome"
 
+    #driver = webdriver.Chrome(chrome_options = options, )
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    #driver = webdriver.Chrome(chrome_options = options,executable_path=DRIVER_PATH)
 
     driver.get('https://dsia.uv.mx/miuv/escritorio/login.aspx')
     #print(driver.page_source)
@@ -61,6 +68,7 @@ def get_user_uv(user="", password=""):
         makedirs('uploads', exist_ok=True)
         makedirs('uploads/pictures/', exist_ok=True)
         
+        
         new_path_picture = getcwd() + "/uploads/pictures/" + str(new_name_picture)+".png"
         
 
@@ -74,7 +82,7 @@ def get_user_uv(user="", password=""):
 
         driver.get(student_photo_profile)
         driver.save_screenshot(new_path_picture)
-        student_photo_profile =  new_path_picture
+        student_photo_profile =  str(new_name_picture)+".png"
         
         
         driver.get('https://dsiapes.uv.mx/MiUVestudiantes/escritorio/smutiles.aspx#')

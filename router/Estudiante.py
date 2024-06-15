@@ -1,7 +1,8 @@
 from distutils.log import error
+from os import getcwd
 from xmlrpc.client import SERVER_ERROR
 from fastapi import APIRouter, Response, Header
-from fastapi.responses import JSONResponse 
+from fastapi.responses import FileResponse, JSONResponse 
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT,HTTP_401_UNAUTHORIZED
 from typing import List
 import json
@@ -21,6 +22,66 @@ from functions_jwt import write_token, validate_token
 estudiantes_Router = APIRouter()
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
 
+
+@estudiantes_Router.get("/estudiantes/informacion-completa")
+def get_estudiantes_full_info():
+    try:
+        with engine.connect() as conn:
+            sql_query = text("""
+            SELECT 
+                estudiantes.id AS estudiantes_id, 
+                estudiantes.id_carreras AS estudiantes_id_Carreras,
+                estudiantes.id_facultades AS estudiantes_id_facultades,
+                estudiantes.nombre_completo AS estudiantes_nombre_completo,
+                estudiantes.matricula AS estudiantes_matricula,
+                estudiantes.correo AS estudiantes_correo,
+                estudiantes.semestre AS estudiantes_semestre,
+                estudiantes.telefono AS estudiantes_telefono,
+                estudiantes.foto_perfil AS estudiantes_foto_perfil,
+                            
+            
+                regiones.id AS regiones_id,
+                regiones.nombre AS regiones_nombre,
+                                
+                facultades.id AS facultades_id,
+                facultades.id_regiones AS facultades_id_regiones,
+                facultades.nombre AS facultades_nombre,
+                facultades.direccion AS facultades_direccion,
+                facultades.telefono AS facultades_telefono,
+                                
+                carreras.id AS carreras_id,
+                carreras.nombre AS carreras_nombre
+                
+                FROM 
+                
+                estudiantes 
+                INNER JOIN 
+                carreras ON estudiantes.id_carreras = carreras.id
+                INNER JOIN 
+                facultades ON estudiantes.id_facultades = facultades.id
+                
+                INNER JOIN 
+                regiones ON facultades.id_regiones = regiones.id
+                """)
+            
+
+            
+            result = conn.execute(sql_query).fetchall()
+            
+            if result:
+                logging.info("Se obtuvo información completa de todos los estudiantes")
+                return [dict(row) for row in result]
+
+                
+            else:
+                logging.warning("No se encontró información")
+                return Response(status_code=HTTP_204_NO_CONTENT)
+    
+    except Exception as exception_error:
+        logging.error(f"Error al obtener informacion completa de todos los estudiantes: {exception_error}", exc_info=True)
+        return Response(status_code= SERVER_ERROR )
+
+
 @estudiantes_Router.get("/estudiantes", response_model=List[Estudiante])
 def get_estudiantes():
     try:
@@ -35,6 +96,9 @@ def get_estudiantes():
     except Exception as exception_error:
         logging.error(f"Error al obtener información de los estudiantes ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
+    
+
+
    
 @estudiantes_Router.get("/estudiante/estudiante/{id_estudiante}", response_model=Estudiante)
 def get_estudiante_by_id_estudiante(id_estudiante: int):
@@ -94,6 +158,10 @@ def get_estudiante_by_id_carrera_and_by_id_estudiante(id_facultad:int, id_carrer
     except Exception as exception_error:
         logging.error(f"Error al obtener información del estudiante con el ID : {id_estudiante} de la carrera con el ID: {id_carrera} ||| {exception_error}") 
         return Response(status_code= SERVER_ERROR )
+
+
+
+
 
 
 @estudiantes_Router.post("/estudiante", status_code=HTTP_201_CREATED)
@@ -171,7 +239,7 @@ def estudiantes_ingresar_al_sistema(estudiantes_auth : EstudianteAuth):
                             correo = student_by_miuv["correo"],
                             contrasena = generate_password_hash(estudiantes_auth.contrasena, "pbkdf2:sha256:30", 30),
                             semestre =  int(student_by_miuv["periodo_actual"]),
-                            telefono = student_by_miuv["telefono"],
+                            telefono = student_by_miuv["telefono"].tr,
                             foto_perfil = student_by_miuv["foto_perfil"],
                         ))
                         

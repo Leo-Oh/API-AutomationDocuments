@@ -1,7 +1,10 @@
-from distutils.log import error
+from os import getcwd, makedirs, path
+from pathlib import Path
+import pathlib
+import uuid
 from xmlrpc.client import SERVER_ERROR
-from fastapi import APIRouter, Response, Header
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, File, Response, Header, UploadFile
+from fastapi.responses import FileResponse, JSONResponse
 from functions_jwt import write_token 
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 from typing import List
@@ -17,6 +20,56 @@ from sqlalchemy.sql import text
 secretarias_Router = APIRouter()
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+
+
+@secretarias_Router.get("/secretarias/informacion-completa")
+def get_secretarias_full_info():
+    try:
+        with engine.connect() as conn:
+
+            sql_query = text("""
+                SELECT 
+                    secretarias.id AS secretarias_id,
+                    secretarias.id_facultades AS secretarias_id_facultades,
+                    secretarias.nombre AS secretarias_nombre,
+                    secretarias.apellido_paterno AS secretarias_apellido_paterno,
+                    secretarias.apellido_materno AS secretarias_apellido_materno,
+                    secretarias.turno AS secretarias_turno,
+                    secretarias.telefono AS secretarias_telefono,
+                    secretarias.matricula AS secretarias_matricula,
+                    secretarias.direccion AS secretarias_direccion,
+                    secretarias.correo AS secretarias_correo,
+                    secretarias.foto_perfil AS secretarias_foto_perfil,
+                    
+                    facultades.id AS facultades_id,
+                    facultades.nombre AS facultades_nombre,
+                    facultades.direccion AS facultades_direccion,
+                    facultades.telefono AS facultades_telefono,
+                    facultades.id_regiones as facultades_id_regiones,
+                    
+                    regiones.nombre as regiones_nombre
+                FROM 
+                    secretarias
+                INNER JOIN 
+                    facultades ON secretarias.id_facultades = facultades.id
+                INNER JOIN 
+                    regiones ON facultades.id_regiones = regiones.id
+            """)
+
+            result = conn.execute(sql_query).fetchall()
+        print([dict(row) for row in result])
+        
+        if(result):
+            logging.info(f"Se obtuvo informacón completa de todas las secretarias")    
+            return [dict(row) for row in result]
+                
+        else:
+            return Response(status_code=HTTP_204_NO_CONTENT)
+    
+    except Exception as exception_error:
+        logging.error(f"Error al obtener informacion completa de las secretarias ||| {exception_error}") 
+        return Response(status_code= SERVER_ERROR )
+
 
 @secretarias_Router.get("/secretarias", response_model=List[Secretaria])
 def get_secretarias():
@@ -213,6 +266,8 @@ def update_settings_secretaria_password(data_update: SecretariaSettingsUpdatePas
         logging.error(f"Error al actualizar la secretaria con el ID: {id_secretaria} de la facultad con ID: {id_facultad} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
+
+
 @secretarias_Router.put("/secretaria/perfil/picture/{id_facultad}/{id_secretaria}", response_model=Secretaria)
 def update_settings_secretaria_user_picture(data_update: SecretariaSettingsUpdateUserPicture, id_facultad: int, id_secretaria:int):
     try:
@@ -230,6 +285,40 @@ def update_settings_secretaria_user_picture(data_update: SecretariaSettingsUpdat
         logging.error(f"Error al actualizar la secretaria con el ID: {id_secretaria} de la facultad con ID: {id_facultad} ||| {exception_error}")
         return Response(status_code= SERVER_ERROR )
 
+
+
+
+@secretarias_Router.post("/secretaria/perfil/picture")
+async def secretary_profile_upload(file_document: UploadFile = File(...)):
+
+    file_new_name = uuid.uuid4()
+    archivo=["jpg","jpeg","png","pdf","doc"]
+    
+    makedirs('uploads', exist_ok=True)
+    makedirs('uploads/secretary', exist_ok=True)
+    
+    file_name_document = pathlib.Path(file_document.filename)
+    
+    if file_name_document.suffix[1:] in archivo:
+        with open(getcwd() + "/uploads/secretary/" + str(file_new_name) + file_name_document.suffix , "wb") as myfile_document:
+            content = await file_document.read()
+            myfile_document.write(content)
+            myfile_document.close()
+                    
+        return JSONResponse(content={
+                "message": "Files saved",
+                "archivo": f"{str(file_new_name) + file_name_document.suffix}",
+                }, status_code=200)
+
+    else:
+        return JSONResponse(content={
+            "message": "File not saved",
+            }, status_code=400)
+
+
+@secretarias_Router.get("/secretaria/perfil/picture")
+def get_file( nombre_archivo: str):
+    return FileResponse(getcwd() + "/uploads/secretary/"+ nombre_archivo)
 
 
 

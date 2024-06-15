@@ -1,6 +1,6 @@
-from distutils.log import error
+from sqlalchemy.sql import text
 from xmlrpc.client import SERVER_ERROR
-from fastapi import APIRouter, Response, Header
+from fastapi import APIRouter, HTTPException, Response, Header, logger
 from fastapi.responses import JSONResponse 
 from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing import List
@@ -14,6 +14,44 @@ import os
 facultades_Router = APIRouter()
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s', filename = "log/registro.log", filemode = 'w',)
+
+
+
+
+@facultades_Router.get("/facultades/informacion-completa")
+def get_facultades_full_info():
+    try:
+        with engine.connect() as conn:
+            sql_query = text("""
+                SELECT 
+                    facultades.id AS facultades_id,
+                    facultades.id_regiones AS facultades_id_regiones,
+                    facultades.nombre AS facultades_nombre,
+                    facultades.direccion AS facultades_direccion,
+                    facultades.telefono AS facultades_telefono,
+                    
+                    regiones.id AS regiones_id,
+                    regiones.nombre AS regiones_nombre
+                FROM 
+                    facultades
+                INNER JOIN 
+                    regiones ON facultades.id_regiones = regiones.id;
+            """)
+            
+            result = conn.execute(sql_query).fetchall()
+            
+            if result:
+                logging.info("Se obtuvo información completa de todas las facultades ")
+                return [dict(row) for row in result]
+                
+            else:
+                logging.warning("No se encontró información")
+                return Response(status_code=HTTP_204_NO_CONTENT)
+    
+    except Exception as exception_error:
+        logging.error(f"Error al obtener informacion completa de las facultades: {exception_error}", exc_info=True)
+        return Response(status_code= SERVER_ERROR )
+
 
 @facultades_Router.get("/facultades", response_model=List[Facultad])
 def get_facultades():

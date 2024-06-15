@@ -5,6 +5,10 @@ from datetime import datetime
 
 from pydantic import BaseModel, EmailStr
 
+
+
+   
+
 class SolicitudTramiteAllField(BaseModel):
     id: Optional[int]
     id_secretarias: int
@@ -32,6 +36,7 @@ class SolicitudTramite(BaseModel):
 
 class SolicitudTramite_update_by_secretaria(BaseModel):
     datos_adjuntos_secretaria:  Optional[str]
+    url_file: Optional[str]
     mensaje_secretaria:  Optional[str]
     estado: str
     fecha_de_aprobacion: Optional[datetime]

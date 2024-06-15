@@ -23,6 +23,8 @@ from documentation.doc import tags_metadatas
 
 from os import makedirs
 
+from pathlib import Path
+
 app = FastAPI(
     title="REST API to Automation Documents by UV",
     description="By ISW UV",
@@ -60,4 +62,6 @@ app.include_router(arhivosTramites_Router,prefix='/api/files/tramites',tags=["Ar
 
 load_dotenv()
 if __name__ == "__main__":
-    uvicorn.run(app, port=1001, host="0.0.0.0")
+
+    Path("log").mkdir(parents=True, exist_ok=True)
+    uvicorn.run(app, port=1001, host="0.0.0.0", debug=True)

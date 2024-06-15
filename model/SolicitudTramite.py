@@ -13,10 +13,10 @@ solicitudes_de_tramites = Table('solicitdes_de_tramites', meta_data,
     Column('datos_adjuntos_estudiante', Text),
     Column('datos_adjuntos_secretaria', Text),
     Column('mensaje_secretaria', Text),
+    Column('url_file', Text),
     Column('fecha_de_solicitud',DateTime(), nullable=False),
     Column('estado', VARCHAR(120), nullable=False),
     Column('fecha_de_aprobacion',DateTime()),
-
     Column('fecha_de_creacion',DateTime(), default = datetime.now()),
     
     

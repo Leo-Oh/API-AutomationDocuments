@@ -31,12 +31,11 @@ async def upload_file(file_document: UploadFile = File(...)):
         return JSONResponse(content={
                 "message": "Files saved",
                 "archivo": myfile_document.name,
-                "detection": compare_images(Know= myfile_document.name,)
                 }, status_code=200)
 
     else:
         return JSONResponse(content={
-            "message": "File not saved, verify send photo, credential and video",
+            "message": "File not saved",
             }, status_code=400)
 
 

@@ -11,11 +11,11 @@
 Para correr este proyecto, necesitas crear un archivo .env y agregar las siguientes variables
 
 - `SECRET_KEY`
-- `LOCAL_DB_USER`
-- `LOCAL_DB_PASSWORD`
-- `LOCAL_DB_HOST`
-- `LOCAL_DB_PORT`
-- `LOCAL_DB_NAME` 
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME` 
 
 
 # Instalación local  
@@ -90,7 +90,7 @@ En caso de no funcionar se puede instalar las librerias principales:
 ~~~
 
 
-# Crear imagen Docker de con Automation Documents
+# Crear imagen Docker de Automation Documents
 
 
 ## Construir la imagen apartir del archivo `Dockerfile`

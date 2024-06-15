@@ -1,5 +1,8 @@
 __pycache__
-venv
-.env
+.idea
 .vscode
-uploads
+venv
+db/.env
+.vscode
+uploads/*
+log/Registro.log
